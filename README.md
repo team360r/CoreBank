@@ -71,41 +71,77 @@ Then open the project in your IDE and head to **Chapter 0: Pre-Flight Check**.
 
 You work in two windows side by side:
 
-```
-+---------------------------+  +---------------------------+
-|                           |  |                           |
-|   Tutorial (browser)      |  |   Your IDE (VS Code /     |
-|   localhost:3000           |  |   Android Studio)         |
-|                           |  |                           |
-|   Step-by-step guide      |  |   FlightBank source code  |
-|   Code examples           |  |   Hot reload on save      |
-|   Quizzes                 |  |                           |
-|                           |  |                           |
-+---------------------------+  +---------------------------+
+```mermaid
+graph LR
+    subgraph Browser["Tutorial — localhost:3000"]
+        A["Step-by-step guide"]
+        B["Code examples"]
+        C["Quizzes"]
+    end
+    subgraph IDE["Your IDE"]
+        D["FlightBank source"]
+        E["Hot reload on save"]
+    end
+    Browser <-->|"read & code"| IDE
 ```
 
 Each chapter has a **git branch** (`chapter-0-preflight`, `chapter-1-first-flight`, etc.) with the completed code. Stuck? Check out the branch and compare.
 
 The tutorial site tracks your progress automatically — visited pages get a checkmark in the sidebar, and a "Welcome back" banner picks up where you left off.
 
+## Learning Path
+
+```mermaid
+graph LR
+    C0["Ch 0\nSetup"] --> C1["Ch 1\nWidgets"]
+    C1 --> C2["Ch 2\nState"]
+    C2 --> C3["Ch 3\nRouting"]
+    C3 --> C4["Ch 4\nTheming"]
+    C4 --> C5["Ch 5\nNetworking"]
+    C5 --> C6["Ch 6\nRiverpod"]
+    C6 --> C7["Ch 7\nDrift"]
+    C7 --> C8["Ch 8\nForms"]
+    C8 --> C9["Ch 9\nAnimations"]
+    C9 --> C10["Ch 10\nNative"]
+    C10 --> C11["Ch 11\nTesting"]
+
+    style C0 fill:#E1F5FE,stroke:#0277BD
+    style C1 fill:#E1F5FE,stroke:#0277BD
+    style C2 fill:#E1F5FE,stroke:#0277BD
+    style C3 fill:#B3E5FC,stroke:#0277BD
+    style C4 fill:#B3E5FC,stroke:#0277BD
+    style C5 fill:#B3E5FC,stroke:#0277BD
+    style C6 fill:#81D4FA,stroke:#0277BD
+    style C7 fill:#81D4FA,stroke:#0277BD
+    style C8 fill:#81D4FA,stroke:#0277BD
+    style C9 fill:#4FC3F7,stroke:#01579B,color:#01579B
+    style C10 fill:#4FC3F7,stroke:#01579B,color:#01579B
+    style C11 fill:#29B6F6,stroke:#01579B,color:#fff
+```
+
 ## Project Structure
 
-```
-flight/
-├── docs-site/              # Docusaurus tutorial website
-│   ├── docs/chapters/      #   12 chapters of MDX content
-│   ├── src/components/     #   Quiz system + progress tracking
-│   └── src/theme/          #   Swizzled sidebar + resume banner
-├── lib/                    # FlightBank Flutter app
-│   ├── screens/            #   Login, Accounts, Transactions, Transfer, Settings
-│   ├── providers/          #   Riverpod state management
-│   ├── routing/            #   GoRouter configuration
-│   ├── database/           #   Drift tables and database
-│   ├── data/               #   Models, mock data, API service
-│   ├── theme/              #   Material 3 theming
-│   └── widgets/            #   Reusable components
-├── setup.sh                # One-command install
-└── start.sh                # Launch tutorial site
+```mermaid
+graph TD
+    Root["flight/"] --> Docs["docs-site/"]
+    Root --> Lib["lib/"]
+    Root --> Scripts["setup.sh / start.sh"]
+
+    Docs --> Chapters["docs/chapters/ — 12 chapters of MDX"]
+    Docs --> Components["src/components/ — Quiz + progress"]
+    Docs --> Theme["src/theme/ — Sidebar + resume banner"]
+
+    Lib --> Screens["screens/ — Login, Accounts, Transactions, Transfer, Settings"]
+    Lib --> Providers["providers/ — Riverpod state"]
+    Lib --> Routing["routing/ — GoRouter config"]
+    Lib --> Database["database/ — Drift tables"]
+    Lib --> Data["data/ — Models, mock data, API"]
+    Lib --> AppTheme["theme/ — Material 3"]
+    Lib --> Widgets["widgets/ — Reusable components"]
+
+    style Root fill:#E1F5FE,stroke:#0277BD
+    style Docs fill:#B3E5FC,stroke:#0277BD
+    style Lib fill:#B3E5FC,stroke:#0277BD
 ```
 
 ## Tech Stack
