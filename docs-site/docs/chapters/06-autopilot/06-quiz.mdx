@@ -1,0 +1,72 @@
+---
+sidebar_position: 2
+title: "Quiz: Autopilot Engaged"
+---
+
+import { Quiz, QuizQuestion } from '@site/src/components/Quiz';
+
+# Quiz — Chapter 6: Autopilot Engaged
+
+<Quiz>
+
+<QuizQuestion
+  question="What problem does Riverpod solve that setState cannot?"
+  options={[
+    "setState is slower than Riverpod at runtime",
+    "setState cannot handle asynchronous operations",
+    "Riverpod eliminates prop drilling and allows any widget to read shared state without passing it through the tree",
+    "setState does not work with StatefulWidget"
+  ]}
+  correctIndex={2}
+  explanation="The core problem with setState at scale is prop drilling — passing state and callbacks down through widgets that don't use them. Riverpod provides global, type-safe providers that any widget can access directly, regardless of its position in the tree."
+/>
+
+<QuizQuestion
+  question="What is the purpose of ProviderScope?"
+  options={[
+    "It limits which widgets can access providers",
+    "It is the root container that stores all provider state and must wrap the app",
+    "It creates a new Dart isolate for provider computation",
+    "It automatically disposes all providers when the app closes"
+  ]}
+  correctIndex={1}
+  explanation="ProviderScope is the storage layer for all Riverpod providers. It must be placed above MaterialApp (typically in main.dart) so that the entire widget tree can access providers. Without it, ref.watch and ref.read will throw."
+/>
+
+<QuizQuestion
+  question="When should you use a family provider (like transactionsProvider(accountId))?"
+  options={[
+    "When you need to share state between parent and child widgets",
+    "When you need multiple instances of the same provider, each parameterized with a different value",
+    "When you want to combine multiple providers into one",
+    "When the provider needs to be created lazily"
+  ]}
+  correctIndex={1}
+  explanation="Family providers create a separate provider instance for each unique parameter value. transactionsProvider('acc-001') and transactionsProvider('acc-002') are independent — each has its own loading, error, and data state. Riverpod caches and disposes them automatically."
+/>
+
+<QuizQuestion
+  question="What does the .when() method on AsyncValue provide?"
+  options={[
+    "A timer that triggers a callback after a delay",
+    "Exhaustive pattern matching over loading, error, and data states",
+    "A way to combine multiple async values into one",
+    "Automatic retry logic for failed operations"
+  ]}
+  correctIndex={1}
+  explanation="AsyncValue.when() takes three callbacks — loading, error, and data — and ensures you handle all possible states. The Dart compiler warns if you miss a case. This replaces the manual connectionState checks you wrote with FutureBuilder."
+/>
+
+<QuizQuestion
+  question="How do you test a Riverpod provider without a widget tree?"
+  options={[
+    "Use WidgetTester with pumpWidget and a MaterialApp",
+    "Mock the provider using Mockito and verify calls",
+    "Create a ProviderContainer with overrides, then read the provider directly",
+    "Run the provider's build method as a standalone function"
+  ]}
+  correctIndex={2}
+  explanation="ProviderContainer is Riverpod's test harness. You create one with overrides (e.g., a mock API service), read the provider, and assert on the result. No widget tree, no pumpWidget — pure logic testing. Always call container.dispose in tearDown."
+/>
+
+</Quiz>

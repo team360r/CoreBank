@@ -1,0 +1,193 @@
+/**
+ * Learning to Fly — Custom Styles
+ * Clean, step-numbered tutorial aesthetic with aviation-inspired sky blue palette.
+ */
+
+/* ─── Brand colour palette (sky blue) ─── */
+:root {
+  --ifm-color-primary: #0277BD;
+  --ifm-color-primary-dark: #026AA9;
+  --ifm-color-primary-darker: #0264A0;
+  --ifm-color-primary-darkest: #015283;
+  --ifm-color-primary-light: #0284D1;
+  --ifm-color-primary-lighter: #028ADA;
+  --ifm-color-primary-lightest: #039CF7;
+  --ifm-code-font-size: 93%;
+  --docusaurus-highlighted-code-line-bg: rgba(2, 119, 189, 0.08);
+
+  /* Callout box colours */
+  --fb-amber-bg: #FFF8E1;
+  --fb-amber-border: #FFB300;
+  --fb-amber-icon: #F57F17;
+  --fb-blue-bg: #E1F5FE;
+  --fb-blue-border: #0277BD;
+  --fb-blue-icon: #01579B;
+  --fb-green-bg: #E8F5E9;
+  --fb-green-border: #2E7D32;
+  --fb-green-icon: #1B5E20;
+
+  /* Step badge */
+  --fb-step-bg: #0277BD;
+  --fb-step-text: #ffffff;
+  --fb-step-size: 28px;
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #4FC3F7;
+  --ifm-color-primary-dark: #29B6F6;
+  --ifm-color-primary-darker: #03A9F4;
+  --ifm-color-primary-darkest: #0288D1;
+  --ifm-color-primary-light: #81D4FA;
+  --ifm-color-primary-lighter: #B3E5FC;
+  --ifm-color-primary-lightest: #E1F5FE;
+  --docusaurus-highlighted-code-line-bg: rgba(79, 195, 247, 0.12);
+
+  --fb-amber-bg: #3E2F00;
+  --fb-amber-border: #FFB300;
+  --fb-amber-icon: #FFCA28;
+  --fb-blue-bg: #01293D;
+  --fb-blue-border: #4FC3F7;
+  --fb-blue-icon: #81D4FA;
+  --fb-green-bg: #0A2F0A;
+  --fb-green-border: #66BB6A;
+  --fb-green-icon: #A5D6A7;
+
+  --fb-step-bg: #4FC3F7;
+  --fb-step-text: #01293D;
+}
+
+/* ─── Typography ─── */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI',
+    sans-serif;
+}
+
+.markdown h1 {
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.markdown h2 {
+  font-weight: 600;
+  margin-top: 2.5rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+}
+
+/* ─── Step numbers (circled badges) ─── */
+.fb-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin: 2rem 0 1.2rem;
+}
+
+.fb-step__badge {
+  flex-shrink: 0;
+  width: var(--fb-step-size);
+  height: var(--fb-step-size);
+  border-radius: 50%;
+  background: var(--fb-step-bg);
+  color: var(--fb-step-text);
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  margin-top: 2px;
+  box-shadow: 0 0 0 3px rgba(2, 119, 189, 0.15);
+}
+
+.fb-step__content {
+  flex: 1;
+}
+
+.fb-step__title {
+  margin: 0 0 0.3rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--ifm-heading-color);
+}
+
+/* ─── Callout boxes ─── */
+.fb-callout {
+  border-left: 4px solid;
+  border-radius: 0 8px 8px 0;
+  padding: 1rem 1.2rem;
+  margin: 1.5rem 0;
+  font-size: 0.95rem;
+}
+
+.fb-callout__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 0.6rem;
+}
+
+/* Why This Matters — amber */
+.fb-callout--amber {
+  background: var(--fb-amber-bg);
+  border-color: var(--fb-amber-border);
+}
+.fb-callout--amber .fb-callout__header {
+  color: var(--fb-amber-icon);
+}
+
+/* Try It Yourself — blue */
+.fb-callout--blue {
+  background: var(--fb-blue-bg);
+  border-color: var(--fb-blue-border);
+}
+.fb-callout--blue .fb-callout__header {
+  color: var(--fb-blue-icon);
+}
+
+/* Checkpoint / success — green */
+.fb-callout--green {
+  background: var(--fb-green-bg);
+  border-color: var(--fb-green-border);
+}
+.fb-callout--green .fb-callout__header {
+  color: var(--fb-green-icon);
+}
+
+/* ─── Code blocks ─── */
+.theme-code-block-highlighted-line {
+  background-color: var(--docusaurus-highlighted-code-line-bg);
+  display: block;
+  margin: 0 -1rem;
+  padding: 0 1rem;
+  border-left: 3px solid var(--ifm-color-primary);
+}
+
+/* ─── Navbar tweaks ─── */
+.navbar {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+/* ─── Sidebar ─── */
+.menu__link--active {
+  font-weight: 600;
+}
+
+/* ─── Footer ─── */
+.footer--dark {
+  background-color: #0D1117;
+}
+
+/* Visited sidebar items */
+.sidebar-item--visited > a,
+.sidebar-item--visited > .menu__link {
+  color: #2e7d32;
+}
+
+[data-theme='dark'] .sidebar-item--visited > a,
+[data-theme='dark'] .sidebar-item--visited > .menu__link {
+  color: #66bb6a;
+}

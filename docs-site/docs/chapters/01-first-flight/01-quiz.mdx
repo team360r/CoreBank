@@ -1,0 +1,62 @@
+---
+sidebar_position: 2
+title: "Quiz: First Flight"
+---
+
+import { Quiz, QuizQuestion } from '@site/src/components/Quiz';
+
+# Quiz: First Flight
+
+Test your understanding of Flutter's rendering model and layout widgets.
+
+<Quiz chapterId="ch01">
+
+<QuizQuestion
+  question="What is the role of the Element tree in Flutter's rendering pipeline?"
+  options={[
+    "It holds the immutable widget descriptions that define the UI",
+    "It performs the actual layout calculations and painting of pixels",
+    "It manages the lifecycle and maps widgets to their corresponding render objects",
+    "It stores the app's business logic and state management"
+  ]}
+  correctIndex={2}
+  explanation="The Element tree sits between widgets and render objects. Elements are long-lived — they track which widget created them, manage lifecycle callbacks, and connect to the corresponding RenderObject. When a widget rebuilds, the element decides whether to update the existing render object or create a new one."
+/>
+
+<QuizQuestion
+  question="Why is ListView.builder preferred over placing all items in a Column for long lists?"
+  options={[
+    "Column does not support scrolling at all",
+    "ListView.builder only builds visible items, saving memory and improving performance",
+    "ListView.builder automatically adds animations between items",
+    "Column cannot contain Card widgets"
+  ]}
+  correctIndex={1}
+  explanation="ListView.builder uses lazy construction — it only builds the widgets currently visible on screen (plus a small buffer). A Column builds every child immediately, regardless of whether it is visible. For large datasets this difference is critical for both memory usage and frame rate."
+/>
+
+<QuizQuestion
+  question="Which widget combination would you use to make a text field fill the remaining horizontal space in a Row?"
+  options={[
+    "SizedBox wrapping the TextField",
+    "Expanded wrapping the TextField",
+    "Container with width: double.infinity wrapping the TextField",
+    "Padding wrapping the TextField"
+  ]}
+  correctIndex={1}
+  explanation="Expanded tells its child to fill all remaining space along the Row's main axis. SizedBox gives a fixed size, Container with double.infinity would cause a layout error inside a Row, and Padding only adds spacing."
+/>
+
+<QuizQuestion
+  question="What does CrossAxisAlignment.stretch do on a Column?"
+  options={[
+    "It stretches the Column itself to fill its parent vertically",
+    "It centres all children horizontally within the Column",
+    "It forces each child to be the same height",
+    "It makes each child fill the full width of the Column"
+  ]}
+  correctIndex={3}
+  explanation="The cross axis of a Column is horizontal. Setting CrossAxisAlignment.stretch makes every child expand to the full width of the Column. This is why our login form's TextFields and Button span edge to edge without needing explicit width constraints."
+/>
+
+</Quiz>

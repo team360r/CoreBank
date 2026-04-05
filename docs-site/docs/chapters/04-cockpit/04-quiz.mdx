@@ -1,0 +1,60 @@
+---
+sidebar_position: 2
+title: "Quiz: Building the Cockpit"
+---
+
+import { Quiz, QuizQuestion } from '@site/src/components/Quiz';
+
+# Quiz — Chapter 4: Building the Cockpit
+
+<Quiz>
+
+<QuizQuestion
+  question="What does ColorScheme.fromSeed generate from a single colour?"
+  options={[
+    "Only a primary and secondary colour",
+    "A full set of 29+ tonal colour roles with guaranteed contrast ratios",
+    "A gradient between two shades of the seed colour",
+    "A palette of 5 complementary colours"
+  ]}
+  correctIndex={1}
+  explanation="ColorScheme.fromSeed uses the Material 3 tonal palette algorithm to produce 29+ semantic colour roles (primary, secondary, tertiary, error, surface variants, and all their on-colours) from a single seed, ensuring proper contrast ratios throughout."
+/>
+
+<QuizQuestion
+  question="How do you enable dark mode in a MaterialApp?"
+  options={[
+    "Set the brightness property on ThemeData to Brightness.dark",
+    "Wrap the app in a DarkModeWidget",
+    "Provide both theme and darkTheme parameters, then set themeMode",
+    "Call MediaQuery.platformBrightness and apply colours manually"
+  ]}
+  correctIndex={2}
+  explanation="MaterialApp accepts a theme (light), darkTheme (dark), and themeMode (ThemeMode.light, ThemeMode.dark, or ThemeMode.system). Flutter automatically selects the correct theme based on the mode."
+/>
+
+<QuizQuestion
+  question="Why should you reference Theme.of(context).colorScheme.primary instead of hardcoding a Color value?"
+  options={[
+    "Hardcoded colours cause compile errors in release mode",
+    "Semantic colour roles adapt automatically to theme changes and dark mode",
+    "Flutter does not support the Color constructor in widgets",
+    "It is required by the Dart linter"
+  ]}
+  correctIndex={1}
+  explanation="Semantic colour roles (like primary, surface, error) are design tokens. They update automatically when the theme or mode changes. Hardcoded values ignore the theme entirely, breaking dark mode and any future palette changes."
+/>
+
+<QuizQuestion
+  question="What is the role of LayoutBuilder in responsive design?"
+  options={[
+    "It automatically scales all child widgets to fill the screen",
+    "It provides the parent's constraints so you can choose different layouts based on available space",
+    "It replaces MediaQuery for all screen size detection",
+    "It converts pixel values to density-independent units"
+  ]}
+  correctIndex={1}
+  explanation="LayoutBuilder gives you a BoxConstraints object representing the space available from the parent widget. You can inspect maxWidth (or maxHeight) and return different widget trees at different breakpoints — for example, a single-column list on phones and a grid on tablets."
+/>
+
+</Quiz>

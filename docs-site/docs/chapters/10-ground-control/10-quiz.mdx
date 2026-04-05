@@ -1,0 +1,62 @@
+---
+sidebar_position: 2
+title: "Quiz: Ground Control"
+---
+
+import { Quiz, QuizQuestion } from '@site/src/components/Quiz';
+
+# Quiz: Ground Control
+
+Test your understanding of platform channels and native integration.
+
+<Quiz chapterId="ch10">
+
+<QuizQuestion
+  question="What type of exception does Flutter throw when a MethodChannel call fails on the native side?"
+  options={[
+    "ChannelException",
+    "NativeException",
+    "PlatformException",
+    "MethodCallException"
+  ]}
+  correctIndex={2}
+  explanation="When the native side returns a FlutterError (iOS) or result.error() (Android), the Dart side receives it as a PlatformException. This exception contains a code, message, and optional details — allowing you to handle different failure cases (user cancelled, hardware unavailable, etc.) distinctly."
+/>
+
+<QuizQuestion
+  question="Why must you check kIsWeb before accessing Platform.isIOS or Platform.isAndroid?"
+  options={[
+    "Platform.isIOS returns true on web browsers running on iPhones",
+    "The dart:io Platform class does not exist on web — accessing its properties throws an error",
+    "kIsWeb must be imported before dart:io can be used",
+    "Platform.isAndroid returns incorrect values when running in Chrome"
+  ]}
+  correctIndex={1}
+  explanation="The dart:io library (which contains the Platform class) is not available in web builds. While you can import it, calling Platform.isIOS or Platform.isAndroid at runtime on web will throw an UnsupportedError. Checking kIsWeb first — which comes from package:flutter/foundation.dart and works everywhere — prevents the crash."
+/>
+
+<QuizQuestion
+  question="In the Android BiometricPlugin, why does MainActivity extend FlutterFragmentActivity instead of FlutterActivity?"
+  options={[
+    "FlutterFragmentActivity has better performance on modern Android devices",
+    "BiometricPrompt requires a FragmentActivity to display its authentication dialog",
+    "FlutterActivity does not support MethodChannel communication",
+    "FlutterFragmentActivity is required for all apps targeting Android 12 and above"
+  ]}
+  correctIndex={1}
+  explanation="Android's BiometricPrompt API requires a FragmentActivity (or an AppCompatActivity, which extends FragmentActivity) to manage the authentication dialog's lifecycle. FlutterActivity does not extend FragmentActivity, so BiometricPrompt cannot attach to it. Switching to FlutterFragmentActivity — which is a drop-in replacement — solves this."
+/>
+
+<QuizQuestion
+  question="What is the main advantage of using a published plugin like local_auth instead of a manual MethodChannel implementation?"
+  options={[
+    "Plugins are always faster than manual MethodChannel code",
+    "Plugins eliminate the need for any Dart code on the Flutter side",
+    "Plugins handle cross-platform implementation, edge cases, and maintenance so you do not have to",
+    "Plugins bypass the MethodChannel and use a more efficient communication protocol"
+  ]}
+  correctIndex={2}
+  explanation="Plugins like local_auth wrap the same MethodChannel mechanism you would build manually, but they handle multiple platforms (iOS, Android, Windows, macOS), edge cases (hardware unavailable, permission denied, app backgrounded during auth), and ongoing maintenance (OS API changes) across the community. They still use MethodChannel under the hood."
+/>
+
+</Quiz>

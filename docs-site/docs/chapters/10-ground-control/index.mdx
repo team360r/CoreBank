@@ -1,0 +1,746 @@
+---
+sidebar_position: 1
+slug: /chapters/ground-control
+title: "Chapter 10: Ground Control"
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Chapter 10: Ground Control
+
+> *"Houston, we've had a problem." — the moment you realise your app needs something only the native platform can provide.* — adapted from Jim Lovell
+
+**Estimated time:** ~30 minutes | **Focus:** Platform Integration | **Branch:** `chapter-10-ground-control`
+
+Flutter handles 95% of what a banking app needs. But biometric authentication, hardware sensors, and certain native UI elements live outside Flutter's reach. This chapter teaches you to cross the boundary — first manually with platform channels, then smartly with existing plugins. You will add biometric login to FlightBank.
+
+---
+
+## 1. When You Need Platform Code
+
+Flutter's rendering engine draws its own pixels on a canvas. It does not wrap native UI components. This means some capabilities require talking directly to the host platform.
+
+Common cases where you need platform code:
+
+| Capability | Why Native? |
+|---|---|
+| Biometric auth (Face ID, fingerprint) | OS-level security APIs |
+| Push notification tokens | Firebase/APNs registration |
+| Camera with custom processing | Platform-specific camera pipelines |
+| Bluetooth / NFC | Hardware access APIs |
+| Platform-specific UI (share sheet, contacts picker) | OS widgets not available in Flutter |
+| Secure storage (Keychain / Keystore) | Hardware-backed encryption |
+
+For FlightBank, biometric authentication is the critical case. Users expect to unlock a banking app with their face or fingerprint.
+
+---
+
+## 2. MethodChannel Explained
+
+A `MethodChannel` is a named pipe between Flutter (Dart) and the host platform (Swift/Kotlin). Flutter sends a message with a method name and arguments, the platform processes it, and sends a result back.
+
+```mermaid
+sequenceDiagram
+    participant F as Flutter (Dart)
+    participant C as MethodChannel
+    participant P as Platform (Swift/Kotlin)
+
+    F->>C: invokeMethod('authenticate')
+    C->>P: Forward method call
+    P->>P: BiometricPrompt / LAContext
+    P-->>C: Return result (true/false)
+    C-->>F: Return Future<bool>
+
+    Note over F,P: Communication is asynchronous.<br/>Dart awaits the Future.
+```
+
+Key rules:
+- Channel names must be unique across your app. Convention: reverse domain notation (`com.flightbank/biometrics`).
+- Arguments and return values must be serializable — primitives, lists, maps. No custom objects.
+- Calls are asynchronous. The Dart side gets a `Future`.
+- Either side can initiate a call, but typically Flutter calls the platform.
+
+---
+
+## 3. Define the Channel
+
+Start by defining the channel name as a constant shared between your Dart code and the method call handler.
+
+```dart title="lib/services/biometric_channel.dart"
+import 'package:flutter/services.dart';
+
+class BiometricChannel {
+  static const _channel = MethodChannel('com.flightbank/biometrics');
+
+  /// Check if biometric authentication is available on this device.
+  static Future<bool> isAvailable() async {
+    try {
+      final result = await _channel.invokeMethod<bool>('isAvailable');
+      return result ?? false;
+    } on PlatformException {
+      return false;
+    }
+  }
+
+  /// Prompt the user for biometric authentication.
+  /// Returns true if authentication succeeded.
+  static Future<bool> authenticate({
+    String reason = 'Authenticate to access FlightBank',
+  }) async {
+    try {
+      final result = await _channel.invokeMethod<bool>(
+        'authenticate',
+        {'reason': reason},
+      );
+      return result ?? false;
+    } on PlatformException catch (e) {
+      throw BiometricException(
+        code: e.code,
+        message: e.message ?? 'Authentication failed',
+      );
+    }
+  }
+}
+
+class BiometricException implements Exception {
+  final String code;
+  final String message;
+
+  const BiometricException({required this.code, required this.message});
+
+  @override
+  String toString() => 'BiometricException($code): $message';
+}
+```
+
+:::tip[WHY THIS MATTERS]
+Always wrap `invokeMethod` in a try/catch for `PlatformException`. If the native side throws an error (device has no biometric hardware, user cancelled, etc.), it arrives as a `PlatformException` on the Dart side. An unhandled exception here crashes your app.
+
+:::
+
+---
+
+## 4. Flutter Side: Calling the Channel
+
+The Dart wrapper above is clean, but you need to integrate it into FlightBank's login flow. Here is how the login screen uses it:
+
+```dart title="lib/screens/login_screen.dart"
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  bool _biometricsAvailable = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkBiometrics();
+  }
+
+  Future<void> _checkBiometrics() async {
+    final available = await BiometricChannel.isAvailable();
+    if (mounted) {
+      setState(() => _biometricsAvailable = available);
+    }
+  }
+
+  Future<void> _authenticateWithBiometrics() async {
+    try {
+      final success = await BiometricChannel.authenticate(
+        reason: 'Log in to FlightBank',
+      );
+      if (success && mounted) {
+        ref.read(authProvider.notifier).loginWithBiometrics();
+        context.go('/dashboard');
+      }
+    } on BiometricException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message)),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // ... email/password fields ...
+            if (_biometricsAvailable) ...[
+              const SizedBox(height: 16),
+              OutlinedButton.icon(
+                onPressed: _authenticateWithBiometrics,
+                icon: const Icon(Icons.fingerprint),
+                label: const Text('Use Biometrics'),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
+
+The biometric button only appears if the device supports it. This graceful degradation is essential — not every device has a fingerprint sensor.
+
+---
+
+## 5. iOS (Swift) Implementation
+
+On the iOS side, you register a `FlutterPlugin` that listens for method calls on the same channel name.
+
+### Step 1: Create the plugin class
+
+```swift title="ios/Runner/BiometricPlugin.swift"
+import Flutter
+import LocalAuthentication
+
+class BiometricPlugin: NSObject, FlutterPlugin {
+
+    static func register(with registrar: FlutterPluginRegistrar) {
+        let channel = FlutterMethodChannel(
+            name: "com.flightbank/biometrics",
+            binaryMessenger: registrar.messenger()
+        )
+        let instance = BiometricPlugin()
+        registrar.addMethodCallDelegate(instance, channel: channel)
+    }
+
+    func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        switch call.method {
+        case "isAvailable":
+            handleIsAvailable(result: result)
+        case "authenticate":
+            let args = call.arguments as? [String: Any]
+            let reason = args?["reason"] as? String ?? "Authenticate"
+            handleAuthenticate(reason: reason, result: result)
+        default:
+            result(FlutterMethodNotImplemented)
+        }
+    }
+
+    private func handleIsAvailable(result: FlutterResult) {
+        let context = LAContext()
+        var error: NSError?
+        let available = context.canEvaluatePolicy(
+            .deviceOwnerAuthenticationWithBiometrics,
+            error: &error
+        )
+        result(available)
+    }
+
+    private func handleAuthenticate(reason: String, result: @escaping FlutterResult) {
+        let context = LAContext()
+        context.evaluatePolicy(
+            .deviceOwnerAuthenticationWithBiometrics,
+            localizedReason: reason
+        ) { success, error in
+            DispatchQueue.main.async {
+                if success {
+                    result(true)
+                } else if let error = error as? LAError {
+                    switch error.code {
+                    case .userCancel:
+                        result(
+                            FlutterError(code: "USER_CANCEL",
+                                         message: "User cancelled authentication",
+                                         details: nil)
+                        )
+                    case .biometryNotAvailable:
+                        result(
+                            FlutterError(code: "NOT_AVAILABLE",
+                                         message: "Biometrics not available",
+                                         details: nil)
+                        )
+                    default:
+                        result(
+                            FlutterError(code: "AUTH_FAILED",
+                                         message: error.localizedDescription,
+                                         details: nil)
+                        )
+                    }
+                } else {
+                    result(false)
+                }
+            }
+        }
+    }
+}
+```
+
+
+
+### Step 2: Register in AppDelegate
+
+```swift title="ios/Runner/AppDelegate.swift"
+import Flutter
+import UIKit
+
+@main
+@objc class AppDelegate: FlutterAppDelegate {
+    override func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
+        GeneratedPluginRegistrant.register(with: self)
+
+        // Register our custom plugin
+        BiometricPlugin.register(with: registrar(forPlugin: "BiometricPlugin")!)
+
+        return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+    }
+}
+```
+
+
+
+### Step 3: Add the Info.plist entry
+
+iOS requires a usage description for biometrics:
+
+```xml title="ios/Runner/Info.plist"
+<key>NSFaceIDUsageDescription</key>
+<string>FlightBank uses Face ID to securely log you in.</string>
+```
+
+Without this entry, iOS will terminate your app when you try to use Face ID.
+
+
+
+---
+
+## 6. Android (Kotlin) Implementation
+
+The Android side uses `BiometricPrompt` from the AndroidX biometric library.
+
+### Step 1: Add the dependency
+
+```groovy title="android/app/build.gradle"
+dependencies {
+    implementation "androidx.biometric:biometric:1.1.0"
+}
+```
+
+
+
+### Step 2: Create the plugin class
+
+```kotlin title="android/app/src/main/kotlin/.../BiometricPlugin.kt"
+package com.flightbank.app
+
+import android.content.Context
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricPrompt
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentActivity
+import io.flutter.embedding.engine.plugins.FlutterPlugin
+import io.flutter.embedding.engine.plugins.activity.ActivityAware
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
+import io.flutter.plugin.common.MethodCall
+import io.flutter.plugin.common.MethodChannel
+import io.flutter.plugin.common.MethodChannel.MethodCallHandler
+
+class BiometricPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
+
+    private lateinit var channel: MethodChannel
+    private var activity: FragmentActivity? = null
+
+    override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        channel = MethodChannel(binding.binaryMessenger, "com.flightbank/biometrics")
+        channel.setMethodCallHandler(this)
+    }
+
+    override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        channel.setMethodCallHandler(null)
+    }
+
+    override fun onAttachedToActivity(binding: ActivityPluginBinding) {
+        activity = binding.activity as? FragmentActivity
+    }
+
+    override fun onDetachedFromActivity() { activity = null }
+    override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
+        activity = binding.activity as? FragmentActivity
+    }
+    override fun onDetachedFromActivityForConfigChanges() { activity = null }
+
+    override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
+        when (call.method) {
+            "isAvailable" -> handleIsAvailable(result)
+            "authenticate" -> {
+                val reason = call.argument<String>("reason") ?: "Authenticate"
+                handleAuthenticate(reason, result)
+            }
+            else -> result.notImplemented()
+        }
+    }
+
+    private fun handleIsAvailable(result: MethodChannel.Result) {
+        val context = activity ?: run {
+            result.success(false)
+            return
+        }
+        val manager = BiometricManager.from(context)
+        val canAuth = manager.canAuthenticate(
+            BiometricManager.Authenticators.BIOMETRIC_STRONG
+        )
+        result.success(canAuth == BiometricManager.BIOMETRIC_SUCCESS)
+    }
+
+    private fun handleAuthenticate(reason: String, result: MethodChannel.Result) {
+        val fragmentActivity = activity ?: run {
+            result.error("NO_ACTIVITY", "No activity available", null)
+            return
+        }
+
+        val executor = ContextCompat.getMainExecutor(fragmentActivity)
+
+        val callback = object : BiometricPrompt.AuthenticationCallback() {
+            override fun onAuthenticationSucceeded(authResult: BiometricPrompt.AuthenticationResult) {
+                result.success(true)
+            }
+
+            override fun onAuthenticationFailed() {
+                result.success(false)
+            }
+
+            override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                if (errorCode == BiometricPrompt.ERROR_USER_CANCELED ||
+                    errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON) {
+                    result.error("USER_CANCEL", errString.toString(), null)
+                } else {
+                    result.error("AUTH_FAILED", errString.toString(), null)
+                }
+            }
+        }
+
+        val prompt = BiometricPrompt(fragmentActivity, executor, callback)
+
+        val info = BiometricPrompt.PromptInfo.Builder()
+            .setTitle("FlightBank")
+            .setSubtitle(reason)
+            .setNegativeButtonText("Cancel")
+            .build()
+
+        prompt.authenticate(info)
+    }
+}
+```
+
+
+
+### Step 3: Register in MainActivity
+
+```kotlin title="android/app/src/main/kotlin/.../MainActivity.kt"
+package com.flightbank.app
+
+import io.flutter.embedding.android.FlutterFragmentActivity
+import io.flutter.embedding.engine.FlutterEngine
+
+class MainActivity : FlutterFragmentActivity() {
+    override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
+        super.configureFlutterEngine(flutterEngine)
+        flutterEngine.plugins.add(BiometricPlugin())
+    }
+}
+```
+
+Note: `FlutterFragmentActivity` instead of `FlutterActivity` — required for `BiometricPrompt`.
+
+
+
+---
+
+## 7. Conditional Platform Code
+
+Not every platform supports every feature. FlightBank runs on iOS, Android, and web — and web has no biometric API.
+
+```dart title="lib/utils/platform_utils.dart"
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
+
+class PlatformUtils {
+  /// True if running in a web browser.
+  static bool get isWeb => kIsWeb;
+
+  /// True if running on iOS (not web).
+  static bool get isIOS => !kIsWeb && Platform.isIOS;
+
+  /// True if running on Android (not web).
+  static bool get isAndroid => !kIsWeb && Platform.isAndroid;
+
+  /// True if biometric auth could potentially be available.
+  static bool get supportsBiometrics => isIOS || isAndroid;
+}
+```
+
+:::tip[WHY THIS MATTERS]
+You must check `kIsWeb` before accessing `Platform.isIOS` or `Platform.isAndroid`. The `dart:io` `Platform` class does not exist on web — importing it is fine, but calling its properties will throw. Always gate with `kIsWeb` first.
+
+:::
+
+Use it in the login screen:
+
+```dart
+if (PlatformUtils.supportsBiometrics && _biometricsAvailable) ...[
+  OutlinedButton.icon(
+    onPressed: _authenticateWithBiometrics,
+    icon: const Icon(Icons.fingerprint),
+    label: const Text('Use Biometrics'),
+  ),
+],
+```
+
+For more nuanced platform checks, use `defaultTargetPlatform`:
+
+```dart
+switch (defaultTargetPlatform) {
+  case TargetPlatform.iOS:
+    // iOS-specific behavior
+  case TargetPlatform.android:
+    // Android-specific behavior
+  default:
+    // Fallback for web, desktop, etc.
+}
+```
+
+---
+
+## 8. Using Existing Plugins — local_auth
+
+You just built biometric auth from scratch to understand the mechanism. In production, you would use the [`local_auth`](https://pub.dev/packages/local_auth) package, which wraps exactly what we built — and more.
+
+```yaml title="pubspec.yaml"
+dependencies:
+  local_auth: ^2.2.0
+```
+
+```dart title="lib/services/biometric_service.dart"
+import 'package:local_auth/local_auth.dart';
+
+class BiometricService {
+  final LocalAuthentication _auth = LocalAuthentication();
+
+  Future<bool> isAvailable() async {
+    final canCheck = await _auth.canCheckBiometrics;
+    final isDeviceSupported = await _auth.isDeviceSupported();
+    return canCheck && isDeviceSupported;
+  }
+
+  Future<bool> authenticate() async {
+    return _auth.authenticate(
+      localizedReason: 'Authenticate to access FlightBank',
+      options: const AuthenticationOptions(
+        stickyAuth: true,
+        biometricOnly: true,
+      ),
+    );
+  }
+}
+```
+
+Compare the two approaches:
+
+| Aspect | Manual MethodChannel | local_auth Package |
+|---|---|---|
+| Lines of Dart code | ~40 | ~15 |
+| Lines of native code | ~150 (Swift + Kotlin) | 0 |
+| Error handling | Manual per platform | Built-in |
+| Platform support | iOS + Android | iOS + Android + Windows + macOS |
+| Maintenance | You own it | Community maintained |
+
+:::info[TRY IT YOURSELF]
+Replace the manual `BiometricChannel` with `local_auth` in your FlightBank project. The Dart-side API is nearly identical. This exercise shows how plugins are simply convenience wrappers around the MethodChannel patterns you just learned.
+
+:::
+
+---
+
+## 9. Writing a Simple Plugin Package
+
+If you find yourself copying platform channel code between projects, package it as a plugin.
+
+```
+my_biometric_plugin/
+  lib/
+    my_biometric_plugin.dart          # Dart API
+    my_biometric_plugin_platform_interface.dart  # Abstract platform interface
+    my_biometric_plugin_method_channel.dart      # MethodChannel implementation
+  android/
+    src/main/kotlin/.../MyBiometricPlugin.kt
+  ios/
+    Classes/MyBiometricPlugin.swift
+  pubspec.yaml
+  README.md
+```
+
+Create the scaffold:
+
+```bash
+flutter create --template=plugin --platforms=android,ios my_biometric_plugin
+```
+
+This generates the full structure with:
+- A Dart API layer
+- A platform interface (for testability and federation)
+- A MethodChannel implementation
+- Native code skeletons for each platform
+- Example app for testing
+
+The platform interface pattern is important: it lets you swap the implementation for testing (mock) or for different platforms (web uses a different strategy than mobile).
+
+```dart title="lib/my_biometric_plugin_platform_interface.dart"
+abstract class MyBiometricPluginPlatform {
+  Future<bool> isAvailable();
+  Future<bool> authenticate({required String reason});
+}
+```
+
+```dart title="lib/my_biometric_plugin_method_channel.dart"
+class MethodChannelMyBiometricPlugin extends MyBiometricPluginPlatform {
+  final _channel = const MethodChannel('com.example/my_biometric_plugin');
+
+  @override
+  Future<bool> isAvailable() async {
+    return await _channel.invokeMethod<bool>('isAvailable') ?? false;
+  }
+
+  @override
+  Future<bool> authenticate({required String reason}) async {
+    return await _channel.invokeMethod<bool>(
+      'authenticate',
+      {'reason': reason},
+    ) ?? false;
+  }
+}
+```
+
+---
+
+## 10. Before/After: Password Login vs Biometric + Password
+
+<Tabs>
+<TabItem value="before" label="Before" default>
+
+```dart title="Password only login"
+class LoginScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        TextField(decoration: InputDecoration(labelText: 'Email')),
+        TextField(
+          decoration: InputDecoration(labelText: 'Password'),
+          obscureText: true,
+        ),
+        ElevatedButton(
+          onPressed: () => login(email, password),
+          child: Text('Log In'),
+        ),
+      ],
+    );
+  }
+}
+```
+
+Every login requires typing a password. Slow, frustrating, and less secure (users pick weak passwords to type quickly).
+
+</TabItem>
+<TabItem value="after" label="After">
+
+```dart title="Biometric + password login"
+class LoginScreen extends ConsumerStatefulWidget { /* ... */ }
+
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  bool _biometricsAvailable = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (PlatformUtils.supportsBiometrics) {
+      _checkBiometrics();
+    }
+  }
+
+  Future<void> _checkBiometrics() async {
+    final available = await BiometricChannel.isAvailable();
+    if (mounted) setState(() => _biometricsAvailable = available);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        // Email and password fields (Form with validation)
+        TextFormField(/* email */),
+        TextFormField(/* password */),
+        FilledButton(
+          onPressed: _loginWithPassword,
+          child: const Text('Log In'),
+        ),
+        // Biometric option — only shown when available
+        if (_biometricsAvailable) ...[
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 12),
+            child: Row(
+              children: [
+                Expanded(child: Divider()),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8),
+                  child: Text('or'),
+                ),
+                Expanded(child: Divider()),
+              ],
+            ),
+          ),
+          OutlinedButton.icon(
+            onPressed: _authenticateWithBiometrics,
+            icon: Icon(
+              PlatformUtils.isIOS
+                  ? Icons.face
+                  : Icons.fingerprint,
+            ),
+            label: Text(
+              PlatformUtils.isIOS
+                  ? 'Log in with Face ID'
+                  : 'Log in with Fingerprint',
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}
+```
+
+Users tap once for biometric login. Password remains as fallback. The button label and icon adapt per platform. Web users see only the password form.
+
+</TabItem>
+</Tabs>
+
+:::tip[CHECKPOINT]
+Your FlightBank app should now:
+- Define a MethodChannel with a clear Dart API wrapper
+- Implement the native side in both Swift (iOS) and Kotlin (Android)
+- Handle PlatformExceptions gracefully with user-facing messages
+- Conditionally show biometric login only on supported platforms
+- Understand how `local_auth` wraps the same patterns you built manually
+
+:::
+
+---
+
+## Summary
+
+You have crossed the platform boundary:
+
+- **MethodChannel** for structured communication between Dart and native code
+- **iOS (Swift)** implementation using `LocalAuthentication` framework
+- **Android (Kotlin)** implementation using `BiometricPrompt`
+- **Conditional platform code** with `kIsWeb`, `Platform.isIOS`, and `defaultTargetPlatform`
+- **Existing plugins** like `local_auth` as production-grade wrappers
+- **Plugin package structure** for reusable platform code
+
+Next chapter, we land the plane — testing, profiling, and shipping FlightBank to the stores.

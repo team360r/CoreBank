@@ -1,0 +1,62 @@
+---
+sidebar_position: 2
+title: "Quiz: Smooth Flying"
+---
+
+import { Quiz, QuizQuestion } from '@site/src/components/Quiz';
+
+# Quiz: Smooth Flying
+
+Test your understanding of Flutter animations and transitions.
+
+<Quiz chapterId="ch09">
+
+<QuizQuestion
+  question="What is the key difference between implicit and explicit animations in Flutter?"
+  options={[
+    "Implicit animations are faster than explicit animations",
+    "Implicit animations declare the target state and Flutter handles interpolation; explicit animations require an AnimationController for manual control",
+    "Explicit animations only work with the Hero widget",
+    "Implicit animations cannot use curves"
+  ]}
+  correctIndex={1}
+  explanation="Implicit animations (AnimatedContainer, TweenAnimationBuilder, etc.) only need a target value and duration — Flutter handles the rest. Explicit animations use an AnimationController, giving you control over playback (forward, reverse, repeat, stop), but require more setup including a TickerProviderStateMixin."
+/>
+
+<QuizQuestion
+  question="Why does AnimatedSwitcher require unique keys on its children?"
+  options={[
+    "Keys improve rendering performance for all widgets",
+    "Without keys, Flutter cannot detect that the child widget has changed and skips the animation",
+    "Keys are required by the Dart compiler for all animated widgets",
+    "Keys prevent the old widget from being disposed too early"
+  ]}
+  correctIndex={1}
+  explanation="AnimatedSwitcher compares its child between builds using the widget's key and type. If you swap between two widgets of the same type (e.g., two Text widgets) without unique keys, Flutter sees them as the same widget and performs an in-place update — no transition occurs. Adding a ValueKey forces Flutter to treat them as different widgets."
+/>
+
+<QuizQuestion
+  question="What does the Interval class do when used with a staggered list animation?"
+  options={[
+    "It sets the delay between user taps on list items",
+    "It maps each list item to a portion of the overall animation timeline so items appear sequentially",
+    "It controls the spacing between list items in the layout",
+    "It repeats the animation at fixed time intervals"
+  ]}
+  correctIndex={1}
+  explanation="Interval defines a sub-range of a 0.0 to 1.0 animation timeline. By giving each list item a different Interval (e.g., item 0 at 0.0–0.4, item 1 at 0.1–0.5, item 2 at 0.2–0.6), you create a staggered cascade effect where items animate in sequence with overlap, all driven by a single AnimationController."
+/>
+
+<QuizQuestion
+  question="How should your app handle animation when the user has enabled reduced motion in their OS accessibility settings?"
+  options={[
+    "Ignore the setting — animations are part of the design",
+    "Remove all widgets that use animation from the widget tree",
+    "Check MediaQuery.of(context).disableAnimations and set duration to zero or skip to the final state",
+    "Slow all animations down to half speed"
+  ]}
+  correctIndex={2}
+  explanation="MediaQuery.disableAnimations reflects the user's OS-level preference for reduced motion. When true, you should either set animation durations to Duration.zero (so changes are instant) or jump the AnimationController to its end value. This respects users with vestibular conditions who experience discomfort from motion."
+/>
+
+</Quiz>

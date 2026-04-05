@@ -1,0 +1,62 @@
+---
+sidebar_position: 2
+title: "Quiz: Pre-Flight Check"
+---
+
+import { Quiz, QuizQuestion } from '@site/src/components/Quiz';
+
+# Quiz: Pre-Flight Check
+
+Test your understanding of Dart fundamentals and the Flutter toolchain.
+
+<Quiz chapterId="ch00">
+
+<QuizQuestion
+  question="What happens when you access a property on a nullable variable without a null check?"
+  options={[
+    "It returns null silently",
+    "Dart automatically provides a default value",
+    "You get a compile-time error",
+    "It throws a runtime exception"
+  ]}
+  correctIndex={2}
+  explanation="Dart's sound null safety catches nullable access at compile time. You must use the ?. operator, a null check, or the ! bang operator (which moves the error to runtime). The compiler will not let you call .length on a String? directly."
+/>
+
+<QuizQuestion
+  question="Which command verifies that your Flutter SDK, platform tools, and connected devices are all configured correctly?"
+  options={[
+    "flutter check",
+    "flutter doctor",
+    "dart analyze",
+    "flutter verify"
+  ]}
+  correctIndex={1}
+  explanation="flutter doctor runs a comprehensive check of your SDK install, IDE plugins, platform toolchains (Xcode, Android SDK), and connected devices. It is the first command to run when something is not working."
+/>
+
+<QuizQuestion
+  question="In Flutter, what is the fundamental building block of the UI?"
+  options={[
+    "A View",
+    "A Component",
+    "A Widget",
+    "A Node"
+  ]}
+  correctIndex={2}
+  explanation="Everything in Flutter's UI is a widget — from structural elements like Scaffold and Column, to styling elements like Padding and Theme, to interactive elements like GestureDetector. Widgets describe what the UI should look like for a given state."
+/>
+
+<QuizQuestion
+  question="What does the `required` keyword do in a Dart named parameter?"
+  options={[
+    "It makes the parameter positional instead of named",
+    "It ensures the parameter must be provided at the call site",
+    "It makes the parameter non-nullable at runtime only",
+    "It gives the parameter a default value of the type's zero-value"
+  ]}
+  correctIndex={1}
+  explanation="The required keyword enforces that callers must provide a value for that named parameter. Without it, named parameters are optional and must either be nullable or have a default value."
+/>
+
+</Quiz>

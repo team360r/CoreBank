@@ -1,0 +1,60 @@
+---
+sidebar_position: 2
+title: "Quiz: Flight Recorder"
+---
+
+import { Quiz, QuizQuestion } from '@site/src/components/Quiz';
+
+# Quiz — Chapter 7: Flight Recorder
+
+<Quiz>
+
+<QuizQuestion
+  question="What is the primary advantage of Drift's watchAll() method over a regular getAll()?"
+  options={[
+    "watchAll() is faster because it caches the query plan",
+    "watchAll() returns a Stream that automatically emits a new list whenever the underlying table changes",
+    "watchAll() runs on a background isolate while getAll() blocks the main thread",
+    "watchAll() supports pagination while getAll() does not"
+  ]}
+  correctIndex={1}
+  explanation="watchAll() returns a Stream<List<T>> that fires every time a row in the watched table is inserted, updated, or deleted. This makes the UI reactive — your Riverpod provider streams the changes directly to the widget, with no polling or manual refresh needed."
+/>
+
+<QuizQuestion
+  question="Why is the databaseProvider created with keepAlive: true?"
+  options={[
+    "To allow multiple widgets to share the same database connection without it being disposed when temporarily unwatched",
+    "To prevent the database from being garbage collected by Dart",
+    "To enable write-ahead logging in SQLite",
+    "To make the database accessible from background isolates"
+  ]}
+  correctIndex={0}
+  explanation="By default, Riverpod disposes providers when no widget is watching them. A database connection is expensive to open and should last the app's lifetime. keepAlive: true prevents automatic disposal. The onDispose callback still handles cleanup if the provider is explicitly invalidated."
+/>
+
+<QuizQuestion
+  question="How does Drift handle schema migrations when you add a new column?"
+  options={[
+    "It automatically detects the change and migrates without any code",
+    "You bump schemaVersion and write migration logic in the onUpgrade callback of MigrationStrategy",
+    "You delete the old database and recreate it from scratch",
+    "You export the data to JSON, recreate the table, and reimport"
+  ]}
+  correctIndex={1}
+  explanation="Drift tracks the schema version number. When the app opens and detects a higher version than what's stored, it runs the onUpgrade callback. You write imperative migration steps (addColumn, createTable, etc.) for each version increment. New installs run onCreate instead."
+/>
+
+<QuizQuestion
+  question="In the offline-first architecture described in this chapter, what is the source of truth for the UI?"
+  options={[
+    "The remote API — the UI always fetches fresh data from the server",
+    "The Riverpod provider — it holds the canonical state in memory",
+    "The local Drift database — the UI watches database streams, and the API syncs data into the database",
+    "SharedPreferences — lightweight key-value pairs for all cached data"
+  ]}
+  correctIndex={2}
+  explanation="In the offline-first pattern, the local database (Drift/SQLite) is always the source of truth. The UI watches Drift streams via Riverpod. The API writes into Drift in the background. This ensures the app works without network access and updates reactively when fresh data arrives."
+/>
+
+</Quiz>

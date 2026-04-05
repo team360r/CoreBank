@@ -1,0 +1,62 @@
+---
+sidebar_position: 2
+title: "Quiz: Reading the Instruments"
+---
+
+import { Quiz, QuizQuestion } from '@site/src/components/Quiz';
+
+# Quiz: Reading the Instruments
+
+Test your understanding of state management, lifecycle methods, and keys.
+
+<Quiz chapterId="ch02">
+
+<QuizQuestion
+  question="What happens if you mutate a state variable without calling setState?"
+  options={[
+    "Flutter throws a runtime exception",
+    "The variable changes but the UI does not rebuild to reflect it",
+    "The widget is automatically disposed and recreated",
+    "The change is queued and applied on the next frame"
+  ]}
+  correctIndex={1}
+  explanation="Mutating state outside of setState changes the variable in memory, but Flutter has no way to know it needs to rebuild the widget. The UI remains stale until something else triggers a rebuild — leading to subtle, hard-to-trace bugs."
+/>
+
+<QuizQuestion
+  question="In which lifecycle method should you create a TextEditingController?"
+  options={[
+    "build()",
+    "didChangeDependencies()",
+    "initState()",
+    "didUpdateWidget()"
+  ]}
+  correctIndex={2}
+  explanation="initState() runs once when the State object is first created. It is the correct place to create controllers, start subscriptions, and initialise anything that should only be set up once. Creating controllers in build() would create a new controller every time the widget rebuilds, losing the user's input."
+/>
+
+<QuizQuestion
+  question="When should you add a ValueKey to items in a ListView.builder?"
+  options={[
+    "Always, for every list regardless of content",
+    "Only when items have animations",
+    "When the list can be reordered, filtered, or items can be inserted/removed",
+    "Only when using StatefulWidgets as list items"
+  ]}
+  correctIndex={2}
+  explanation="Keys give Flutter a stable identity for each item. In a static, never-changing list, index-based matching is fine. But once items can move, be inserted, or be deleted, Flutter needs keys to match old elements to their correct new widgets. Without keys, state can leak between items."
+/>
+
+<QuizQuestion
+  question="What does the `mounted` property check before calling setState?"
+  options={[
+    "Whether the widget has been laid out on screen",
+    "Whether the widget's State object is still in the widget tree",
+    "Whether the app is in the foreground",
+    "Whether the build method has been called at least once"
+  ]}
+  correctIndex={1}
+  explanation="After an async operation (like a network call), the widget might have been removed from the tree. Calling setState on a disposed State throws an error. Checking `mounted` ensures the State is still active before scheduling a rebuild. This is essential when using Future.delayed or awaiting network responses."
+/>
+
+</Quiz>

@@ -1,0 +1,60 @@
+---
+sidebar_position: 2
+title: "Quiz: Talking to the Tower"
+---
+
+import { Quiz, QuizQuestion } from '@site/src/components/Quiz';
+
+# Quiz — Chapter 5: Talking to the Tower
+
+<Quiz>
+
+<QuizQuestion
+  question="Why should you store a Future in initState rather than calling the async method directly inside build?"
+  options={[
+    "Dart does not allow async calls inside build methods",
+    "Storing in initState prevents a new network request on every widget rebuild",
+    "The build method cannot return a FutureBuilder",
+    "initState runs on a background isolate, making network calls faster"
+  ]}
+  correctIndex={1}
+  explanation="The build method can be called many times per second (during animations, setState calls, etc.). If you create a new Future inside build, each call triggers a new network request. Storing the Future in initState ensures it is created once and reused."
+/>
+
+<QuizQuestion
+  question="What are the three states FutureBuilder handles?"
+  options={[
+    "idle, running, complete",
+    "pending, resolved, rejected",
+    "waiting (loading), error, data (success)",
+    "created, active, disposed"
+  ]}
+  correctIndex={2}
+  explanation="FutureBuilder's snapshot has a connectionState (waiting while the Future is incomplete) and then either hasError (the Future threw) or hasData (the Future completed with a value). Your builder should handle all three states."
+/>
+
+<QuizQuestion
+  question="What is the advantage of a sealed Result type over plain try/catch?"
+  options={[
+    "It is faster at runtime because exceptions are never thrown",
+    "It forces callers to handle both success and failure at the type level — the compiler checks exhaustiveness",
+    "It automatically retries failed requests",
+    "It converts all errors to HTTP 500 responses"
+  ]}
+  correctIndex={1}
+  explanation="A sealed Result type with Success and Failure subclasses makes error handling explicit. When you switch on a Result, the Dart compiler verifies you handle every case. Plain try/catch is easy to forget and does not appear in the function signature."
+/>
+
+<QuizQuestion
+  question="Why does ApiService accept an http.Client through its constructor?"
+  options={[
+    "The http package requires manual client instantiation",
+    "It allows injecting a MockClient in tests so no real network calls are made",
+    "Multiple clients are needed for concurrent requests",
+    "It is required to set custom headers on requests"
+  ]}
+  correctIndex={1}
+  explanation="Dependency injection through the constructor is a standard testing pattern. In production you use the default http.Client. In tests you pass a MockClient that returns predetermined JSON responses, making tests fast, reliable, and offline."
+/>
+
+</Quiz>

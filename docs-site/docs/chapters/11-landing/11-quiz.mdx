@@ -1,0 +1,62 @@
+---
+sidebar_position: 2
+title: "Quiz: Cleared for Landing"
+---
+
+import { Quiz, QuizQuestion } from '@site/src/components/Quiz';
+
+# Quiz: Cleared for Landing
+
+Test your understanding of Flutter testing, profiling, and release preparation.
+
+<Quiz chapterId="ch11">
+
+<QuizQuestion
+  question="Why must you wrap your widget in a MaterialApp when using tester.pumpWidget() in a widget test?"
+  options={[
+    "MaterialApp is required by the flutter_test package to initialize the test runner",
+    "Many widgets depend on ancestors like Theme, MediaQuery, and Navigator that MaterialApp provides",
+    "Without MaterialApp, the widget renders but all text appears invisible",
+    "MaterialApp enables hot reload during test execution"
+  ]}
+  correctIndex={1}
+  explanation="Widgets like Text, Icon, Scaffold, and many others look up the widget tree for Theme, Directionality, MediaQuery, and other inherited widgets. MaterialApp provides all of these. Without it, you get runtime errors about missing ancestors — not rendering issues."
+/>
+
+<QuizQuestion
+  question="What is the difference between tester.pump() and tester.pumpAndSettle()?"
+  options={[
+    "pump() is for unit tests and pumpAndSettle() is for widget tests",
+    "pump() advances a single frame while pumpAndSettle() keeps advancing frames until all animations and scheduled frames complete",
+    "pump() works synchronously and pumpAndSettle() works asynchronously",
+    "pump() only renders the widget tree and pumpAndSettle() also runs validators"
+  ]}
+  correctIndex={1}
+  explanation="tester.pump() advances exactly one frame (or a specified duration). tester.pumpAndSettle() repeatedly pumps frames until there are no more pending frame callbacks or animations — it 'settles' the widget tree. Use pumpAndSettle() after taps, navigation, and other actions that trigger animations. Use pump() when you need to test a specific point during an animation."
+/>
+
+<QuizQuestion
+  question="How does ProviderScope.overrides help in widget tests?"
+  options={[
+    "It automatically mocks all HTTP requests made by providers",
+    "It replaces real provider implementations with test data, enabling isolated and deterministic tests",
+    "It disables Riverpod's caching to ensure fresh data on each test",
+    "It converts async providers into synchronous ones for faster testing"
+  ]}
+  correctIndex={1}
+  explanation="ProviderScope overrides let you replace any provider with a test-specific implementation. For example, you can override an accountsProvider that normally fetches from an API to instead return hardcoded test accounts. This makes tests fast (no network), deterministic (same data every run), and isolated (no shared state between tests)."
+/>
+
+<QuizQuestion
+  question="What does the --obfuscate flag do when building a Flutter release, and why is --split-debug-info required alongside it?"
+  options={[
+    "--obfuscate encrypts the app binary; --split-debug-info provides the decryption key",
+    "--obfuscate renames classes and methods to meaningless names to protect source code; --split-debug-info saves the symbol map needed to decode crash stack traces",
+    "--obfuscate removes all comments and whitespace; --split-debug-info preserves them in a separate file",
+    "--obfuscate compresses the binary; --split-debug-info stores the decompression table"
+  ]}
+  correctIndex={1}
+  explanation="Code obfuscation renames Dart symbols (class names, method names) to short meaningless identifiers, making reverse-engineering harder. However, this also makes crash stack traces unreadable. The --split-debug-info flag outputs the original symbol mapping to a directory, which you can later use to symbolicate production crash reports back into human-readable traces."
+/>
+
+</Quiz>

@@ -1,0 +1,62 @@
+---
+sidebar_position: 2
+title: "Quiz: Navigating the Skies"
+---
+
+import { Quiz, QuizQuestion } from '@site/src/components/Quiz';
+
+# Quiz: Navigating the Skies
+
+Test your understanding of GoRouter, route configuration, and navigation patterns.
+
+<Quiz chapterId="ch03">
+
+<QuizQuestion
+  question="What is the key difference between context.go() and context.push()?"
+  options={[
+    "go() is for named routes and push() is for path-based routes",
+    "go() replaces the navigation stack to match the target path, while push() adds a screen on top of the current stack",
+    "go() navigates without animation and push() navigates with animation",
+    "go() is synchronous and push() is asynchronous"
+  ]}
+  correctIndex={1}
+  explanation="context.go() rebuilds the entire navigation stack to match the URL hierarchy. context.push() adds a new screen on top of whatever is currently showing. Use go() for top-level navigation (after login, switching tabs) and push() for drilling deeper (opening a specific account). The distinction matters for back-button behaviour."
+/>
+
+<QuizQuestion
+  question="What does the redirect callback in GoRouter return when no redirect is needed?"
+  options={[
+    "An empty string",
+    "The current path",
+    "false",
+    "null"
+  ]}
+  correctIndex={3}
+  explanation="Returning null from the redirect callback tells GoRouter to proceed with the original navigation. Returning a path string (like '/' or '/accounts') triggers a redirect to that location. The redirect runs before every navigation event, making it the single place to enforce auth guards."
+/>
+
+<QuizQuestion
+  question="What problem does ShellRoute solve?"
+  options={[
+    "It provides authentication middleware for all child routes",
+    "It wraps child routes in a shared layout (like a bottom navigation bar) that persists across navigation",
+    "It pre-loads all child route screens into memory for faster navigation",
+    "It automatically generates breadcrumb navigation for nested routes"
+  ]}
+  correctIndex={1}
+  explanation="ShellRoute wraps its child routes in a shared parent widget. The shell (e.g., a Scaffold with a BottomNavigationBar) stays mounted while only the child content swaps. Without it, you would need to duplicate the navigation bar in every screen and lose state (like scroll position) when switching tabs."
+/>
+
+<QuizQuestion
+  question="How do you read a path parameter like :id from the route /accounts/:id in a GoRoute builder?"
+  options={[
+    "state.params['id']",
+    "state.pathParameters['id']",
+    "context.read('id')",
+    "GoRouter.of(context).id"
+  ]}
+  correctIndex={1}
+  explanation="Path parameters are accessed via state.pathParameters, which is a Map<String, String> containing all path parameter values. For the route /accounts/:id navigated to as /accounts/4521, state.pathParameters['id'] returns '4521'. Query parameters are accessed separately via state.uri.queryParameters."
+/>
+
+</Quiz>

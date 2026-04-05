@@ -1,0 +1,62 @@
+---
+sidebar_position: 2
+title: "Quiz: Forms & Checklists"
+---
+
+import { Quiz, QuizQuestion } from '@site/src/components/Quiz';
+
+# Quiz: Forms & Checklists
+
+Test your understanding of Flutter forms, validation, and input formatting.
+
+<Quiz chapterId="ch08">
+
+<QuizQuestion
+  question="What does GlobalKey<FormState> allow you to do that you cannot do without it?"
+  options={[
+    "Style form fields with a consistent theme",
+    "Trigger validate() and save() on all FormField descendants at once",
+    "Automatically dispose controllers when the form is removed",
+    "Prevent the keyboard from overlapping form fields"
+  ]}
+  correctIndex={1}
+  explanation="The GlobalKey<FormState> gives you access to the FormState, which provides validate(), save(), and reset() methods that operate on every FormField inside the Form widget. Without it, you would need to validate each field individually."
+/>
+
+<QuizQuestion
+  question="A validator function returns null. What does this mean?"
+  options={[
+    "The field is empty",
+    "Validation has not run yet",
+    "The field value is valid",
+    "The field should be cleared"
+  ]}
+  correctIndex={2}
+  explanation="In Flutter's validation convention, a validator returns null when the value is acceptable and a non-null String (the error message) when validation fails. Returning null signals 'no error' to the Form."
+/>
+
+<QuizQuestion
+  question="Why should you set onPressed to null on the submit button while a transfer is in progress?"
+  options={[
+    "It changes the button color to indicate loading",
+    "It prevents the user from tapping the button again, avoiding duplicate transfers",
+    "It is required by the Form widget to finalize validation",
+    "It triggers the loading animation automatically"
+  ]}
+  correctIndex={1}
+  explanation="Setting onPressed to null disables the button both visually (it appears greyed out) and functionally (taps are ignored). This is critical for financial operations where a double-tap could execute two transfers. The visual change is a side effect of Material Design's disabled state — it is not the primary reason."
+/>
+
+<QuizQuestion
+  question="What is the purpose of a TextInputFormatter like CurrencyInputFormatter?"
+  options={[
+    "It validates the final value when the form is submitted",
+    "It transforms text in real time as the user types, before it reaches the controller",
+    "It converts the string to a number type for the backend",
+    "It sets the keyboard type to numeric automatically"
+  ]}
+  correctIndex={1}
+  explanation="A TextInputFormatter intercepts every edit to the text field and can modify the value before it is stored in the controller. CurrencyInputFormatter uses this to insert commas and enforce decimal places as the user types, providing instant visual feedback. It does not affect validation or keyboard type — those are separate concerns."
+/>
+
+</Quiz>
