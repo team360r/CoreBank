@@ -69,21 +69,7 @@ Then open the project in your IDE and head to **Chapter 0: Pre-Flight Check**.
 
 ## How It Works
 
-You work in two windows side by side:
-
-```mermaid
-graph LR
-    subgraph Browser["Tutorial — localhost:3000"]
-        A["Step-by-step guide"]
-        B["Code examples"]
-        C["Quizzes"]
-    end
-    subgraph IDE["Your IDE"]
-        D["FlightBank source"]
-        E["Hot reload on save"]
-    end
-    Browser <-->|"read & code"| IDE
-```
+You work in two windows side by side — the tutorial in your browser, FlightBank in your IDE. Read a section, write the code, hot reload, repeat.
 
 Each chapter has a **git branch** (`chapter-0-preflight`, `chapter-1-first-flight`, etc.) with the completed code. Stuck? Check out the branch and compare.
 
@@ -91,57 +77,53 @@ The tutorial site tracks your progress automatically — visited pages get a che
 
 ## Learning Path
 
-```mermaid
-graph LR
-    C0["Ch 0\nSetup"] --> C1["Ch 1\nWidgets"]
-    C1 --> C2["Ch 2\nState"]
-    C2 --> C3["Ch 3\nRouting"]
-    C3 --> C4["Ch 4\nTheming"]
-    C4 --> C5["Ch 5\nNetworking"]
-    C5 --> C6["Ch 6\nRiverpod"]
-    C6 --> C7["Ch 7\nDrift"]
-    C7 --> C8["Ch 8\nForms"]
-    C8 --> C9["Ch 9\nAnimations"]
-    C9 --> C10["Ch 10\nNative"]
-    C10 --> C11["Ch 11\nTesting"]
+The tutorial is divided into three phases, each building on the last:
 
-    style C0 fill:#E1F5FE,stroke:#0277BD
-    style C1 fill:#E1F5FE,stroke:#0277BD
-    style C2 fill:#E1F5FE,stroke:#0277BD
-    style C3 fill:#B3E5FC,stroke:#0277BD
-    style C4 fill:#B3E5FC,stroke:#0277BD
-    style C5 fill:#B3E5FC,stroke:#0277BD
-    style C6 fill:#81D4FA,stroke:#0277BD
-    style C7 fill:#81D4FA,stroke:#0277BD
-    style C8 fill:#81D4FA,stroke:#0277BD
-    style C9 fill:#4FC3F7,stroke:#01579B,color:#01579B
-    style C10 fill:#4FC3F7,stroke:#01579B,color:#01579B
-    style C11 fill:#29B6F6,stroke:#01579B,color:#fff
+**Phase 1 — Foundations** (Chapters 0-3)
+> Setup, widgets, state, and navigation. By the end you have a multi-screen app with GoRouter.
+
+**Phase 2 — Production Patterns** (Chapters 4-8)
+> Theming, networking, Riverpod 3, Drift persistence, and forms. The app becomes data-driven and offline-capable.
+
+**Phase 3 — Polish & Ship** (Chapters 9-11)
+> Animations, platform channels, testing, and release prep. The app is production-ready.
+
+```mermaid
+graph TD
+    subgraph P1["Phase 1 — Foundations"]
+        C0["0 Setup"] --> C1["1 Widgets"] --> C2["2 State"] --> C3["3 Routing"]
+    end
+    subgraph P2["Phase 2 — Production Patterns"]
+        C4["4 Theming"] --> C5["5 Networking"] --> C6["6 Riverpod"] --> C7["7 Drift"] --> C8["8 Forms"]
+    end
+    subgraph P3["Phase 3 — Polish & Ship"]
+        C9["9 Animations"] --> C10["10 Native"] --> C11["11 Testing"]
+    end
+    C3 --> C4
+    C8 --> C9
 ```
 
 ## Project Structure
 
-```mermaid
-graph TD
-    Root["flight/"] --> Docs["docs-site/"]
-    Root --> Lib["lib/"]
-    Root --> Scripts["setup.sh / start.sh"]
-
-    Docs --> Chapters["docs/chapters/ — 12 chapters of MDX"]
-    Docs --> Components["src/components/ — Quiz + progress"]
-    Docs --> Theme["src/theme/ — Sidebar + resume banner"]
-
-    Lib --> Screens["screens/ — Login, Accounts, Transactions, Transfer, Settings"]
-    Lib --> Providers["providers/ — Riverpod state"]
-    Lib --> Routing["routing/ — GoRouter config"]
-    Lib --> Database["database/ — Drift tables"]
-    Lib --> Data["data/ — Models, mock data, API"]
-    Lib --> AppTheme["theme/ — Material 3"]
-    Lib --> Widgets["widgets/ — Reusable components"]
-
-    style Root fill:#E1F5FE,stroke:#0277BD
-    style Docs fill:#B3E5FC,stroke:#0277BD
-    style Lib fill:#B3E5FC,stroke:#0277BD
+```
+flight/
+├── docs-site/                  # Tutorial website (Docusaurus)
+│   ├── docs/chapters/          #   12 chapters, each with Part 1 + Part 2 + Quiz
+│   ├── src/components/Quiz/    #   Quiz system with progress tracking
+│   ├── src/hooks/              #   useProgress hook (localStorage)
+│   └── src/theme/              #   Resume banner + visited checkmarks
+│
+├── lib/                        # FlightBank app (Flutter)
+│   ├── screens/                #   Login, Accounts, Transactions, Transfer, Settings
+│   ├── providers/              #   Riverpod 3 state management
+│   ├── routing/                #   GoRouter configuration
+│   ├── database/               #   Drift tables + database
+│   ├── data/                   #   Models, mock data, API service
+│   ├── theme/                  #   Material 3 light/dark theming
+│   └── widgets/                #   AccountCard, TransactionTile
+│
+├── setup.sh                    # Install Flutter + Node deps
+└── start.sh                    # Launch tutorial at localhost:3000
 ```
 
 ## Tech Stack
