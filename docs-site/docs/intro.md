@@ -36,7 +36,26 @@ Each chapter focuses on one concept and builds on the previous chapters. You'll 
 1. **This tutorial** in your browser — step-by-step instructions, code examples, and quizzes
 2. **Your IDE** with the FlightBank Flutter project — where you write and run code
 
-Each chapter has a corresponding **git branch** with the completed code. If you get stuck, you can always check out the branch to see the finished result.
+### Chapter branches
+
+Every chapter has a matching git branch that contains the FlightBank app exactly as it should look after completing that chapter. The branches build incrementally — `chapter-1-first-flight` has just the static screens, `chapter-3-navigation` adds GoRouter, `chapter-6-autopilot` adds Riverpod, and so on up to `completed` which has everything.
+
+Use them to check your work, catch up if you fall behind, or skip ahead:
+
+```bash
+# See the finished code for any chapter
+git checkout chapter-3-navigation
+
+# Compare your work against the solution
+git diff chapter-3-navigation -- lib/
+
+# Go back to where you were
+git checkout main
+```
+
+:::tip
+You don't need to use the branches at all if you're following along and writing the code yourself — they're a safety net, not a requirement.
+:::
 
 ## Prerequisites
 

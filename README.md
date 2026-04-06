@@ -71,9 +71,40 @@ Then open the project in your IDE and head to **Chapter 0: Pre-Flight Check**.
 
 You work in two windows side by side — the tutorial in your browser, FlightBank in your IDE. Read a section, write the code, hot reload, repeat.
 
-Each chapter has a **git branch** (`chapter-0-preflight`, `chapter-1-first-flight`, etc.) with the completed code. Stuck? Check out the branch and compare.
-
 The tutorial site tracks your progress automatically — visited pages get a checkmark in the sidebar, and a "Welcome back" banner picks up where you left off.
+
+## Chapter Branches
+
+Every chapter has a matching **git branch** containing the app exactly as it should look after completing that chapter. The branches build incrementally — each one adds only the code introduced in that chapter:
+
+| Branch | What it contains |
+|--------|-----------------|
+| `chapter-0-preflight` | Bare project with placeholder screen |
+| `chapter-1-first-flight` | + static LoginScreen, AccountsScreen, models |
+| `chapter-2-instruments` | + setState, validation, loading state |
+| `chapter-3-navigation` | + GoRouter, ShellRoute, TransactionsScreen |
+| `chapter-4-cockpit` | + AppTheme, dark mode, custom widgets, settings |
+| `chapter-5-networking` | + ApiService, FutureBuilder on all screens |
+| `chapter-6-autopilot` | + Riverpod providers, ConsumerWidget refactor |
+| `chapter-7-recorder` | + Drift database tables and queries |
+| `chapter-8-forms` | + TransferScreen with form validation |
+| `chapter-9-smooth` | + Hero animations, page transitions |
+| `chapter-10-ground-control` | + BiometricService with MethodChannel |
+| `chapter-11-landing` | + Widget, provider, and integration tests |
+| `completed` | The finished app (same as chapter-11) |
+
+**Stuck on a chapter?** Check out the branch to see the solution:
+
+```bash
+# See the completed code for chapter 3
+git checkout chapter-3-navigation
+
+# Compare your work against the solution
+git diff chapter-3-navigation -- lib/
+
+# Go back to your working branch
+git checkout main
+```
 
 ## Learning Path
 
