@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'screens/login_screen.dart';
 
 void main() {
   runApp(const FlightBankApp());
@@ -16,15 +17,7 @@ class FlightBankApp extends StatelessWidget {
         colorSchemeSeed: const Color(0xFF0277BD),
         useMaterial3: true,
       ),
-      home: const Scaffold(
-        body: Center(
-          child: Text(
-            'FlightBank\nReady for takeoff!',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 24),
-          ),
-        ),
-      ),
+      home: const LoginScreen(),
     );
   }
 }
