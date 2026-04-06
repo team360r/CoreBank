@@ -1,14 +1,24 @@
 import 'package:flutter/material.dart';
 import 'routing/router.dart';
+import 'theme/app_theme.dart';
 
 void main() { runApp(const FlightBankApp()); }
 
-class FlightBankApp extends StatelessWidget {
+class FlightBankApp extends StatefulWidget {
   const FlightBankApp({super.key});
+  static _FlightBankAppState? of(BuildContext context) => context.findAncestorStateOfType<_FlightBankAppState>();
+  @override
+  State<FlightBankApp> createState() => _FlightBankAppState();
+}
+
+class _FlightBankAppState extends State<FlightBankApp> {
+  ThemeMode _themeMode = ThemeMode.system;
+  ThemeMode get themeMode => _themeMode;
+  void setThemeMode(ThemeMode mode) => setState(() => _themeMode = mode);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(title: 'FlightBank', debugShowCheckedModeBanner: false,
-      theme: ThemeData(colorSchemeSeed: const Color(0xFF0277BD), useMaterial3: true),
-      routerConfig: router);
+      theme: AppTheme.light(), darkTheme: AppTheme.dark(), themeMode: _themeMode, routerConfig: router);
   }
 }
