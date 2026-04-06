@@ -20,7 +20,9 @@ class AccountCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Card(
+    return Hero(
+      tag: 'account-${account.id}',
+      child: Card(
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
@@ -75,6 +77,7 @@ class AccountCard extends StatelessWidget {
           ),
         ),
       ),
+    ),
     );
   }
 }
