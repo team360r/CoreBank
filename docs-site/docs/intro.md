@@ -2,12 +2,12 @@
 sidebar_position: 1
 slug: /intro
 title: Introduction
-description: "Welcome to Learning to Fly — a hands-on Flutter tutorial built around a real banking app."
+description: "Welcome to CoreBank Tutorial — a hands-on Flutter tutorial built around a real banking app."
 ---
 
 # Introduction
 
-**Learning to Fly** is a hands-on Flutter tutorial for experienced developers. You'll build FlightBank — a realistic banking app — from scratch, learning Flutter's core concepts and production patterns along the way.
+**CoreBank Tutorial** is a hands-on Flutter tutorial for experienced developers. You'll build CoreBank — a realistic banking app — from scratch, learning Flutter's core concepts and production patterns along the way.
 
 ## What you'll learn
 
@@ -34,7 +34,7 @@ If you've never written code before, start with the [official Dart language tour
 Each chapter focuses on one concept and builds on the previous chapters. You'll work in two windows:
 
 1. **This tutorial** in your browser — step-by-step instructions, code examples, and quizzes
-2. **Your IDE** with the FlightBank Flutter project — where you write and run code
+2. **Your IDE** with the CoreBank Flutter project — where you write and run code
 
 ### Chapter branches
 

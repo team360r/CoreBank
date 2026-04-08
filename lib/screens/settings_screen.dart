@@ -47,7 +47,7 @@ class SettingsScreen extends ConsumerWidget {
                           style: theme.textTheme.titleMedium,
                         ),
                         Text(
-                          'alex@flightbank.dev',
+                          'alex@corebank.dev',
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
                           ),

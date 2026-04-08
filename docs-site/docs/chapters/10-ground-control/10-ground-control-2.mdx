@@ -25,7 +25,7 @@ dependencies {
 ### Step 2: Create the plugin class
 
 ```kotlin title="android/app/src/main/kotlin/.../BiometricPlugin.kt"
-package com.flightbank.app
+package com.corebank.app
 
 import android.content.Context
 import androidx.biometric.BiometricManager
@@ -45,7 +45,7 @@ class BiometricPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     private var activity: FragmentActivity? = null
 
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
-        channel = MethodChannel(binding.binaryMessenger, "com.flightbank/biometrics")
+        channel = MethodChannel(binding.binaryMessenger, "com.corebank/biometrics")
         channel.setMethodCallHandler(this)
     }
 
@@ -116,7 +116,7 @@ class BiometricPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         val prompt = BiometricPrompt(fragmentActivity, executor, callback)
 
         val info = BiometricPrompt.PromptInfo.Builder()
-            .setTitle("FlightBank")
+            .setTitle("CoreBank")
             .setSubtitle(reason)
             .setNegativeButtonText("Cancel")
             .build()
@@ -129,7 +129,7 @@ class BiometricPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 ### Step 3: Register in MainActivity
 
 ```kotlin title="android/app/src/main/kotlin/.../MainActivity.kt"
-package com.flightbank.app
+package com.corebank.app
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -148,7 +148,7 @@ Note: `FlutterFragmentActivity` instead of `FlutterActivity` — required for `B
 
 ## 7. Conditional Platform Code
 
-Not every platform supports every feature. FlightBank runs on iOS, Android, and web — and web has no biometric API.
+Not every platform supports every feature. CoreBank runs on iOS, Android, and web — and web has no biometric API.
 
 ```dart title="lib/utils/platform_utils.dart"
 import 'dart:io' show Platform;
@@ -224,7 +224,7 @@ class BiometricService {
 
   Future<bool> authenticate() async {
     return _auth.authenticate(
-      localizedReason: 'Authenticate to access FlightBank',
+      localizedReason: 'Authenticate to access CoreBank',
       options: const AuthenticationOptions(
         stickyAuth: true,
         biometricOnly: true,
@@ -245,7 +245,7 @@ Compare the two approaches:
 | Maintenance | You own it | Community maintained |
 
 :::info[TRY IT YOURSELF]
-Replace the manual `BiometricChannel` with `local_auth` in your FlightBank project. The Dart-side API is nearly identical. This exercise shows how plugins are simply convenience wrappers around the MethodChannel patterns you just learned.
+Replace the manual `BiometricChannel` with `local_auth` in your CoreBank project. The Dart-side API is nearly identical. This exercise shows how plugins are simply convenience wrappers around the MethodChannel patterns you just learned.
 
 :::
 
@@ -414,7 +414,7 @@ Users tap once for biometric login. Password remains as fallback. The button lab
 </Tabs>
 
 :::tip[CHECKPOINT]
-Your FlightBank app should now:
+Your CoreBank app should now:
 - Define a MethodChannel with a clear Dart API wrapper
 - Implement the native side in both Swift (iOS) and Kotlin (Android)
 - Handle PlatformExceptions gracefully with user-facing messages
@@ -450,4 +450,4 @@ You have crossed the platform boundary:
 
 ## What's Next
 
-Next chapter, we land the plane. You will learn how to test FlightBank with unit tests, widget tests, and integration tests, profile performance with Flutter DevTools, and prepare the app for production release on both the App Store and Google Play.
+Next chapter, we land the plane. You will learn how to test CoreBank with unit tests, widget tests, and integration tests, profile performance with Flutter DevTools, and prepare the app for production release on both the App Store and Google Play.

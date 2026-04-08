@@ -15,7 +15,7 @@ import TabItem from '@theme/TabItem';
 
 **Estimated time:** ~25 minutes | **Focus:** Theme & Custom Widgets | **Branch:** `chapter-4-cockpit`
 
-In the previous chapters you built screens with default styling. That works for prototyping, but FlightBank needs to look like a real product. In this chapter you will build a complete design system: a colour palette, typography scale, dark mode, reusable widgets, and responsive layouts that adapt from phone to tablet.
+In the previous chapters you built screens with default styling. That works for prototyping, but CoreBank needs to look like a real product. In this chapter you will build a complete design system: a colour palette, typography scale, dark mode, reusable widgets, and responsive layouts that adapt from phone to tablet.
 
 ---
 
@@ -29,7 +29,7 @@ Material 3 introduced `ColorScheme.fromSeed`, which generates a full, harmonious
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  // FlightBank brand blue — our single seed colour
+  // CoreBank brand blue — our single seed colour
   static const Color _seedColor = Color(0xFF1565C0);
 
   static ThemeData light() {
@@ -70,13 +70,13 @@ Apply the theme in `main.dart`:
 ```dart title="lib/main.dart"
 import 'package:flight_bank/theme/app_theme.dart';
 
-class FlightBankApp extends StatelessWidget {
-  const FlightBankApp({super.key});
+class CoreBankApp extends StatelessWidget {
+  const CoreBankApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'FlightBank',
+      title: 'CoreBank',
       theme: AppTheme.light(),
       home: const LoginScreen(),
     );
@@ -150,7 +150,7 @@ Never hardcode font sizes in individual widgets. Always reference the `textTheme
 
 ## 3. Dark Mode
 
-FlightBank will support both light and dark themes. The `ThemeMode` enum has three values: `light`, `dark`, and `system` (follows OS preference).
+CoreBank will support both light and dark themes. The `ThemeMode` enum has three values: `light`, `dark`, and `system` (follows OS preference).
 
 ### Step 1: Add a dark theme factory
 
@@ -189,14 +189,14 @@ static ThemeData dark() {
 ### Step 2: Wire both themes into MaterialApp
 
 ```dart title="lib/main.dart"
-class FlightBankApp extends StatefulWidget {
-  const FlightBankApp({super.key});
+class CoreBankApp extends StatefulWidget {
+  const CoreBankApp({super.key});
 
   @override
-  State<FlightBankApp> createState() => _FlightBankAppState();
+  State<CoreBankApp> createState() => _CoreBankAppState();
 }
 
-class _FlightBankAppState extends State<FlightBankApp> {
+class _CoreBankAppState extends State<CoreBankApp> {
   ThemeMode _themeMode = ThemeMode.system;
 
   void toggleTheme(bool isDark) {
@@ -208,7 +208,7 @@ class _FlightBankAppState extends State<FlightBankApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'FlightBank',
+      title: 'CoreBank',
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
       themeMode: _themeMode,

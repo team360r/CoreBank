@@ -1,6 +1,6 @@
 import React from 'react';
 
-const STORAGE_KEY = 'flightbank_progress';
+const STORAGE_KEY = 'corebank_progress';
 
 export interface QuizState {
   answers: (number | null)[];

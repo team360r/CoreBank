@@ -125,7 +125,7 @@ class Auth extends _$Auth {
       return const User(
         id: 'usr-001',
         name: 'Amelia Earhart',
-        email: 'amelia@flightbank.dev',
+        email: 'amelia@corebank.dev',
       );
     });
   }
@@ -159,7 +159,7 @@ class LoginScreen extends ConsumerWidget {
             isLoading: authState.isLoading,
             onPressed: () {
               ref.read(authProvider.notifier).login(
-                    'amelia@flightbank.dev',
+                    'amelia@corebank.dev',
                     'password',
                   );
             },
@@ -318,14 +318,14 @@ Each unique `accountId` gets its own provider instance with its own loading/erro
 
 ## Provider Dependency Graph
 
-Here is how FlightBank's providers relate to each other:
+Here is how CoreBank's providers relate to each other:
 
 ```mermaid
 graph TD
   API["apiServiceProvider"] --> ACC["accountsProvider"]
   API --> TX["transactionsProvider(id)"]
   AUTH["authProvider"] --> USER["currentUserProvider"]
-  THEME["themeModeProvider"] --> APP["FlightBankApp"]
+  THEME["themeModeProvider"] --> APP["CoreBankApp"]
   ACC --> HOME["AccountsScreen"]
   TX --> DETAIL["TransactionScreen"]
   USER --> HOME
@@ -490,6 +490,6 @@ Run all tests: `flutter test` — everything should pass.
 
 ## What's Next
 
-In Chapter 7 you will add a local SQLite database using Drift so FlightBank works offline. You will define type-safe tables, write reactive DAOs that stream changes to the UI, wire Drift into Riverpod, and handle schema migrations as the app evolves.
+In Chapter 7 you will add a local SQLite database using Drift so CoreBank works offline. You will define type-safe tables, write reactive DAOs that stream changes to the UI, wire Drift into Riverpod, and handle schema migrations as the app evolves.
 
 Head to the quiz, then continue to [Chapter 7: Flight Recorder](/chapters/recorder).

@@ -1,10 +1,10 @@
-/// Mock data for FlightBank — used before API integration.
+/// Mock data for CoreBank — used before API integration.
 import 'models.dart';
 
 const mockUser = User(
   id: 'user-1',
   name: 'Alex Johnson',
-  email: 'alex@flightbank.dev',
+  email: 'alex@corebank.dev',
 );
 
 final mockAccounts = [

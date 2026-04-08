@@ -73,7 +73,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'FlightBank',
+                      'CoreBank',
                       style: theme.textTheme.headlineLarge,
                       textAlign: TextAlign.center,
                     ),

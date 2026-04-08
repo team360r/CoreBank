@@ -133,7 +133,7 @@ final goRouter = GoRouter(
 
 ## 3. Define the Routes
 
-Our FlightBank app has four screens, each with a clear URL:
+Our CoreBank app has four screens, each with a clear URL:
 
 ```mermaid
 graph TD
@@ -273,6 +273,331 @@ Add a query parameter `?highlight=true` to the transactions route. In `Transacti
 
 :::
 
+---
+
+## 6. Redirect Guards
+
+Banking apps must prevent unauthenticated users from accessing account data. `go_router` has a built-in `redirect` callback that runs before every navigation:
+
+```dart title="lib/router.dart (updated)"
+// Simple auth state — replaced with real auth in Chapter 6
+bool isAuthenticated = false;
+
+final goRouter = GoRouter(
+  initialLocation: '/',
+  debugLogDiagnostics: true,
+  redirect: (context, state) {
+    final loggingIn = state.matchedLocation == '/';
+
+    // Not authenticated and not on login page → redirect to login
+    if (!isAuthenticated && !loggingIn) {
+      return '/';
+    }
+
+    // Authenticated but on login page → redirect to accounts
+    if (isAuthenticated && loggingIn) {
+      return '/accounts';
+    }
+
+    // No redirect needed
+    return null;
+  },
+  routes: [
+    // ... same routes as before
+  ],
+);
+```
+
+```mermaid
+graph TD
+    Nav["Navigation event"] --> Check{"isAuthenticated?"}
+    Check -- "No" --> Login{"On login page?"}
+    Login -- "No" --> Redirect1["Redirect → /"]
+    Login -- "Yes" --> Allow1["Allow"]
+    Check -- "Yes" --> LoginCheck{"On login page?"}
+    LoginCheck -- "Yes" --> Redirect2["Redirect → /accounts"]
+    LoginCheck -- "No" --> Allow2["Allow"]
+
+    style Redirect1 fill:#fce4ec,stroke:#c62828,color:#000
+    style Redirect2 fill:#e8f5e9,stroke:#2e7d32,color:#000
+    style Allow1 fill:#e8f5e9,stroke:#2e7d32,color:#000
+    style Allow2 fill:#e8f5e9,stroke:#2e7d32,color:#000
+```
+
+Now update the login screen to set `isAuthenticated = true` after successful validation, then call `context.go('/accounts')`:
+
+```dart title="lib/screens/login_screen.dart (submit method)"
+void _validateAndSubmit() {
+  setState(() {
+    _emailError = _validateEmail(_emailController.text);
+    _passwordError = _validatePassword(_passwordController.text);
+  });
+
+  if (_emailError != null || _passwordError != null) return;
+
+  setState(() => _isLoading = true);
+
+  // Simulate auth — replaced with real auth in Chapter 6
+  Future.delayed(const Duration(seconds: 1), () {
+    if (!mounted) return;
+    setState(() => _isLoading = false);
+
+    // Set auth state and navigate
+    isAuthenticated = true;
+    context.go('/accounts');
+  });
+}
+```
+
+---
+
+## 7. context.go() vs context.push()
+
+`go_router` provides two navigation methods, and choosing the wrong one creates confusing back-button behaviour:
+
+| Method | What it does | Back button behaviour |
+|--------|-------------|----------------------|
+| `context.go('/accounts')` | Replaces the navigation stack to match the target path | Back button follows the route hierarchy |
+| `context.push('/accounts/4521')` | Pushes a new screen onto the current stack | Back button pops to the previous screen |
+
+**Use `go` for top-level navigation** — switching between tabs, redirecting after login. The stack is rebuilt to match the URL.
+
+**Use `push` for drilling down** — opening a specific account from the list. The user expects the back button to return to the list.
+
+```dart title="lib/screens/accounts_screen.dart"
+// Tap an account → push to transactions (back button returns here)
+onTap: () {
+  context.push('/accounts/${account.id}');
+},
+```
+
+```dart title="lib/screens/login_screen.dart"
+// After login → go to accounts (back button should NOT return to login)
+context.go('/accounts');
+```
+
+:::tip[WHY THIS MATTERS]
+If you use `push` to navigate after login, the user can tap the back button and land on the login screen again — even though they are authenticated. Using `go` replaces the stack entirely, so the login screen is no longer in the back stack. Think of `go` as "I am now *here*" and `push` as "show me this, and let me come back."
+
+:::
+
+---
+
+## 8. Deep Linking Basics
+
+One of `go_router`'s biggest wins is automatic deep link support. Because every screen has a URL, the OS can open your app directly to a specific screen.
+
+On **Flutter Web**, deep linking works automatically — the browser URL bar reflects the current route, and pasting a URL navigates directly to that screen.
+
+On **mobile**, you need to configure platform-specific settings:
+
+<Tabs>
+<TabItem value="android" label="Android" default>
+
+Add an intent filter to `android/app/src/main/AndroidManifest.xml`:
+
+```xml title="android/app/src/main/AndroidManifest.xml"
+<intent-filter>
+  <action android:name="android.intent.action.VIEW" />
+  <category android:name="android.intent.category.DEFAULT" />
+  <category android:name="android.intent.category.BROWSABLE" />
+  <data
+    android:scheme="https"
+    android:host="corebank.app" />
+</intent-filter>
+```
+
+</TabItem>
+<TabItem value="ios" label="iOS">
+
+Add associated domains to your `Info.plist` or Xcode signing settings:
+
+```xml title="ios/Runner/Info.plist"
+<key>FlutterDeepLinkingEnabled</key>
+<true/>
+```
+
+And configure your Associated Domains entitlement:
+
+```
+applinks:corebank.app
+```
+
+</TabItem>
+</Tabs>
+
+With this in place, `https://corebank.app/accounts/4521` opens the app directly to the transactions screen for account 4521. The `go_router` redirect guard ensures that if the user is not authenticated, they see the login screen first, and after login they are forwarded to the original deep link destination.
+
+---
+
+## 9. Wire Up main.dart
+
+Replace `MaterialApp` with `MaterialApp.router` to hand control to `go_router`:
+
+```dart title="lib/main.dart"
+import 'package:flutter/material.dart';
+import 'router.dart';
+
+void main() {
+  runApp(const CoreBankApp());
+}
+
+class CoreBankApp extends StatelessWidget {
+  const CoreBankApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp.router(
+      title: 'CoreBank',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorSchemeSeed: const Color(0xFF1565C0),
+        useMaterial3: true,
+        fontFamily: 'Inter',
+      ),
+      routerConfig: goRouter,
+    );
+  }
+}
+```
+
+### Step 1: Create placeholder screens
+
+You need `TransactionsScreen` and `SettingsScreen` for the routes to compile:
+
+```dart title="lib/screens/transactions_screen.dart"
+import 'package:flutter/material.dart';
+
+class TransactionsScreen extends StatelessWidget {
+  final String accountId;
+
+  const TransactionsScreen({super.key, required this.accountId});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Account $accountId')),
+      body: Center(
+        child: Text(
+          'Transactions for account $accountId\n(Coming in Chapter 5)',
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
+  }
+}
+```
+
+```dart title="lib/screens/settings_screen.dart"
+import 'package:flutter/material.dart';
+
+class SettingsScreen extends StatelessWidget {
+  const SettingsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Settings')),
+      body: const Center(
+        child: Text('Settings screen\n(Coming in Chapter 7)'),
+      ),
+    );
+  }
+}
+```
 
 
-Continue to [Part 2](/chapters/navigation/part-2) to add redirect guards, deep linking, and wire up the full navigation flow.
+
+### Step 2: Test the full navigation flow
+
+Hot-restart the app (press `R`) since we changed `main.dart`. Then:
+
+1. **Login screen** appears at `/`.
+2. Fill in valid credentials and tap **Sign In**.
+3. The app navigates to `/accounts` — the bottom nav bar is visible.
+4. Tap an account — the app pushes to `/accounts/4521`.
+5. Press back — you return to `/accounts`.
+6. Tap **Settings** in the bottom nav — navigates to `/settings`.
+7. Press back on the login screen — you should NOT be able to go back to an authenticated page.
+
+
+
+---
+
+## 10. Before / After: Navigator.push vs GoRouter
+
+<Tabs>
+<TabItem value="before" label="Before (Navigator.push)" default>
+
+```dart title="Imperative navigation"
+// In login screen — after auth
+Navigator.pushReplacement(
+  context,
+  MaterialPageRoute(builder: (_) => AccountsScreen()),
+);
+
+// In accounts screen — drill into transactions
+Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (_) => TransactionsScreen(accountId: '4521'),
+  ),
+);
+
+// No URL structure, no deep links, no redirect guards
+// Bottom nav requires manual Navigator key management
+```
+
+**Problems:**
+- No URL for each screen
+- Deep links require custom platform channel code
+- Auth guards are ad-hoc checks scattered across screens
+- Bottom navigation with independent back stacks is painful
+
+</TabItem>
+<TabItem value="after" label="After (GoRouter)">
+
+```dart title="Declarative navigation"
+// In login screen — after auth
+context.go('/accounts');
+
+// In accounts screen — drill into transactions
+context.push('/accounts/4521');
+
+// Router config handles:
+// - URL structure automatically
+// - Deep links on web and mobile
+// - Auth redirect guard in one place
+// - ShellRoute keeps bottom nav alive
+```
+
+**Wins:**
+- Single source of truth for all routes
+- Auth redirect in one `redirect` callback
+- Deep links work on web, iOS, and Android
+- `ShellRoute` handles persistent bottom navigation
+- URLs visible in browser on Flutter Web
+
+</TabItem>
+</Tabs>
+
+:::tip[CHECKPOINT]
+After completing this chapter you should have:
+- `go_router` installed and configured in `lib/router.dart`
+- Four routes: `/`, `/accounts`, `/accounts/:id`, `/settings`
+- A `ShellRoute` with a `BottomNavigationBar` wrapping authenticated screens
+- A redirect guard that sends unauthenticated users to login
+- `MaterialApp.router` replacing the old `MaterialApp` in `main.dart`
+- Working navigation between all screens with correct back-button behaviour
+
+:::
+
+---
+
+## Summary
+
+Your app now has real navigation. Users sign in, browse accounts, drill into transactions, and access settings — all with working back buttons, URL-based routing, and auth guards. `ShellRoute` keeps the bottom navigation bar alive across screen changes, and deep links work on all platforms.
+
+The routes are in place, but the data is still hardcoded. The next chapter introduces state management beyond `setState` — using Riverpod to share data across the widget tree without prop drilling.
+
+Up next: **Chapter 4: The Cockpit** — where you manage app-wide state with Riverpod.

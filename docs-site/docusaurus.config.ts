@@ -3,7 +3,7 @@ import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
-  title: 'Learning to Fly',
+  title: 'CoreBank Tutorial',
   tagline: 'Master Flutter by building a real banking app',
   favicon: 'img/favicon.ico',
 
@@ -11,11 +11,11 @@ const config: Config = {
     v4: true,
   },
 
-  url: 'https://learning-to-fly.dev',
+  url: 'https://corebank-tutorial.dev',
   baseUrl: '/',
 
   organizationName: 'team360r',
-  projectName: 'flight',
+  projectName: 'CoreBank',
 
   onBrokenLinks: 'throw',
 
@@ -51,9 +51,9 @@ const config: Config = {
       respectPrefersColorScheme: true,
     },
     navbar: {
-      title: 'Learning to Fly',
+      title: 'CoreBank Tutorial',
       logo: {
-        alt: 'Learning to Fly Logo',
+        alt: 'CoreBank Tutorial Logo',
         src: 'img/logo.svg',
       },
       items: [
@@ -88,7 +88,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Copyright \u00a9 ${new Date().getFullYear()} Learning to Fly. Built with Docusaurus.`,
+      copyright: `Copyright \u00a9 ${new Date().getFullYear()} CoreBank Tutorial. Built with Docusaurus.`,
     },
     prism: {
       theme: prismThemes.github,

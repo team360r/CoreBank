@@ -43,7 +43,7 @@ The inspector shows the live widget tree, constraint propagation, and render obj
 - **Unbounded constraints** — a `ListView` inside a `Column` without `Expanded`
 
 :::info[TRY IT YOURSELF]
-Run FlightBank in profile mode (`flutter run --profile`) and navigate through the app. Open DevTools and look at the Timeline tab. Find the slowest frame during a page transition and identify which phase (build, layout, paint) took the most time.
+Run CoreBank in profile mode (`flutter run --profile`) and navigate through the app. Open DevTools and look at the Timeline tab. Find the slowest frame during a page transition and identify which phase (build, layout, paint) took the most time.
 
 :::
 
@@ -51,7 +51,7 @@ Run FlightBank in profile mode (`flutter run --profile`) and navigate through th
 
 ## 7. Release Checklist
 
-Before FlightBank hits the app stores, work through this checklist.
+Before CoreBank hits the app stores, work through this checklist.
 
 ### App Icon and Splash Screen
 
@@ -87,16 +87,16 @@ dart run flutter_native_splash:create
 
 ```bash
 # Generate a keystore (do this once, store securely)
-keytool -genkey -v -keystore ~/flightbank-release.jks \
+keytool -genkey -v -keystore ~/corebank-release.jks \
   -keyalg RSA -keysize 2048 -validity 10000 \
-  -alias flightbank
+  -alias corebank
 ```
 
 ```properties title="android/key.properties"
 storePassword=your_store_password
 keyPassword=your_key_password
-keyAlias=flightbank
-storeFile=/Users/you/flightbank-release.jks
+keyAlias=corebank
+storeFile=/Users/you/corebank-release.jks
 ```
 
 ```groovy title="android/app/build.gradle"
@@ -194,7 +194,7 @@ Before submitting to the stores, verify:
 
 ## 8. What You Have Built
 
-Over 12 chapters (0 through 11), you have built FlightBank — a complete Flutter banking app. Here is the full flight path:
+Over 12 chapters (0 through 11), you have built CoreBank — a complete Flutter banking app. Here is the full flight path:
 
 ```mermaid
 graph LR
@@ -233,7 +233,7 @@ graph LR
 
 ## 9. Where to Go Next
 
-FlightBank is complete, but your Flutter journey continues. Here are paths forward:
+CoreBank is complete, but your Flutter journey continues. Here are paths forward:
 
 ### Deepen Your Knowledge
 
@@ -242,10 +242,10 @@ FlightBank is complete, but your Flutter journey continues. Here are paths forwa
 - **Slivers** — `SliverAppBar`, `SliverList`, `SliverGrid` for complex scrolling experiences
 - **Isolates** — move heavy computation (CSV export, data processing) off the main thread
 
-### Expand FlightBank
+### Expand CoreBank
 
 - **Push notifications** — Firebase Cloud Messaging for transaction alerts
-- **Deep linking** — handle `flightbank://transfer?to=acc-2` URLs
+- **Deep linking** — handle `corebank://transfer?to=acc-2` URLs
 - **Internationalization** — `flutter_localizations` and `.arb` files for multi-language support
 - **Theming** — dynamic color with Material You on Android, system accent colors on iOS
 - **Accessibility** — semantic labels, screen reader testing, contrast verification
@@ -267,7 +267,7 @@ FlightBank is complete, but your Flutter journey continues. Here are paths forwa
 - [Flutter Discord](https://discord.gg/flutter) — real-time help
 
 :::tip[CHECKPOINT]
-You made it. FlightBank is built, tested, and ready for takeoff. You understand Flutter's widget system, state management with Riverpod, networking, local persistence, forms, animations, platform channels, testing, and release builds. You are not a beginner anymore — you are a Flutter developer. Happy flying.
+You made it. CoreBank is built, tested, and ready for takeoff. You understand Flutter's widget system, state management with Riverpod, networking, local persistence, forms, animations, platform channels, testing, and release builds. You are not a beginner anymore — you are a Flutter developer. Happy flying.
 
 :::
 
@@ -285,7 +285,7 @@ This final chapter covered the last mile:
 - **DevTools profiling** — timeline, memory, and widget inspector
 - **Release checklist** — icons, splash, signing, obfuscation, build modes
 
-FlightBank is cleared for landing.
+CoreBank is cleared for landing.
 
 ---
 

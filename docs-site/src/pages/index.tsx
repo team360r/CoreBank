@@ -11,7 +11,7 @@ const chapters = [
     num: 0,
     title: 'Pre-Flight Check',
     branch: 'chapter-0-preflight',
-    desc: 'Install Flutter, set up your IDE, and get the FlightBank starter app running.',
+    desc: 'Install Flutter, set up your IDE, and get the CoreBank starter app running.',
     time: '~15 min',
   },
   {
@@ -120,7 +120,7 @@ function HeroSection(): ReactNode {
     <header className={styles.hero}>
       <div className={styles.heroInner}>
         <p className={styles.heroPre}>Flutter Tutorial</p>
-        <h1 className={styles.heroTitle}>Learning to Fly</h1>
+        <h1 className={styles.heroTitle}>CoreBank Tutorial</h1>
         <p className={styles.heroTagline}>
           Master Flutter by building a real banking app.<br />
           From widgets to Riverpod, GoRouter to Drift.
@@ -226,7 +226,7 @@ function CtaSection(): ReactNode {
       <div className={styles.container}>
         <h2 className={styles.ctaTitle}>Ready to learn Flutter?</h2>
         <p className={styles.ctaSubtitle}>
-          Start with Chapter 0 — install the SDK, set up your IDE, and get FlightBank
+          Start with Chapter 0 — install the SDK, set up your IDE, and get CoreBank
           running on your device. The rest follows naturally.
         </p>
         <Link className={styles.btnPrimary} to="/chapters/preflight">

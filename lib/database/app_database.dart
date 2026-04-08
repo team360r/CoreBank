@@ -56,7 +56,7 @@ class AppDatabase extends _$AppDatabase {
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {
     final dbFolder = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dbFolder.path, 'flightbank.sqlite'));
+    final file = File(p.join(dbFolder.path, 'corebank.sqlite'));
     return NativeDatabase.createInBackground(file);
   });
 }

@@ -1,4 +1,4 @@
-/// Simulated API service for FlightBank.
+/// Simulated API service for CoreBank.
 /// In a real app, this would make HTTP requests to a backend.
 import 'dart:async';
 import 'models.dart';

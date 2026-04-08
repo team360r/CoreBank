@@ -4,5 +4,9 @@ import 'app.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const ProviderScope(child: FlightBankApp()));
+  runApp(
+    const ProviderScope(
+      child: CoreBankApp(),
+    ),
+  );
 }

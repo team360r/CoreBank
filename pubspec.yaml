@@ -1,5 +1,5 @@
-name: flightbank
-description: "FlightBank — A Flutter banking app for the Learning to Fly tutorial."
+name: corebank
+description: "CoreBank — A Flutter banking app for the CoreBank tutorial."
 publish_to: 'none'
 version: 1.0.0+1
 

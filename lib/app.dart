@@ -4,8 +4,8 @@ import 'routing/router.dart';
 import 'theme/app_theme.dart';
 import 'providers/theme_provider.dart';
 
-class FlightBankApp extends ConsumerWidget {
-  const FlightBankApp({super.key});
+class CoreBankApp extends ConsumerWidget {
+  const CoreBankApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -13,7 +13,7 @@ class FlightBankApp extends ConsumerWidget {
     final themeMode = ref.watch(themeModeProvider);
 
     return MaterialApp.router(
-      title: 'FlightBank',
+      title: 'CoreBank',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),

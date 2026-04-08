@@ -138,7 +138,7 @@ Add an intent filter to `android/app/src/main/AndroidManifest.xml`:
   <category android:name="android.intent.category.BROWSABLE" />
   <data
     android:scheme="https"
-    android:host="flightbank.app" />
+    android:host="corebank.app" />
 </intent-filter>
 ```
 
@@ -155,13 +155,13 @@ Add associated domains to your `Info.plist` or Xcode signing settings:
 And configure your Associated Domains entitlement:
 
 ```
-applinks:flightbank.app
+applinks:corebank.app
 ```
 
 </TabItem>
 </Tabs>
 
-With this in place, `https://flightbank.app/accounts/4521` opens the app directly to the transactions screen for account 4521. The `go_router` redirect guard ensures that if the user is not authenticated, they see the login screen first, and after login they are forwarded to the original deep link destination.
+With this in place, `https://corebank.app/accounts/4521` opens the app directly to the transactions screen for account 4521. The `go_router` redirect guard ensures that if the user is not authenticated, they see the login screen first, and after login they are forwarded to the original deep link destination.
 
 ---
 
@@ -174,16 +174,16 @@ import 'package:flutter/material.dart';
 import 'router.dart';
 
 void main() {
-  runApp(const FlightBankApp());
+  runApp(const CoreBankApp());
 }
 
-class FlightBankApp extends StatelessWidget {
-  const FlightBankApp({super.key});
+class CoreBankApp extends StatelessWidget {
+  const CoreBankApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: 'FlightBank',
+      title: 'CoreBank',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorSchemeSeed: const Color(0xFF1565C0),

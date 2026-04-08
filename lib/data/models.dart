@@ -1,4 +1,4 @@
-/// FlightBank data models.
+/// CoreBank data models.
 
 enum AccountType { checking, savings }
 
