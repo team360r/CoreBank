@@ -1,4 +1,6 @@
 /// Mock data for CoreBank — used before API integration.
+library;
+
 import 'models.dart';
 
 const mockUser = User(

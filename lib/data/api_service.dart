@@ -1,5 +1,7 @@
 /// Simulated API service for CoreBank.
 /// In a real app, this would make HTTP requests to a backend.
+library;
+
 import 'dart:async';
 import 'models.dart';
 import 'mock_data.dart';

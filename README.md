@@ -13,6 +13,16 @@ cd CoreBank
 ./start.sh
 ```
 
+## Code generation
+
+The Drift database layer relies on generated `*.g.dart` files, which are not committed. After cloning (or whenever you change the Drift tables/database), generate them:
+
+```bash
+dart run build_runner build --delete-conflicting-outputs
+```
+
+Without this step, `flutter analyze`, the tests, and the build will fail with `app_database.g.dart` "hasn't been generated" errors.
+
 ## Structure
 
 - `docs-site/` — Docusaurus tutorial website

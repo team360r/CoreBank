@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flightbank/providers/accounts_provider.dart';
-import 'package:flightbank/data/models.dart';
+import 'package:corebank/providers/accounts_provider.dart';
+import 'package:corebank/data/models.dart';
 
 void main() {
   group('accountsProvider', () {
