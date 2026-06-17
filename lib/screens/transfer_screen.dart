@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../data/models.dart';
 import '../providers/accounts_provider.dart';
 import '../providers/auth_provider.dart';
 
@@ -87,7 +86,7 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 DropdownButtonFormField<String>(
-                  value: _fromAccountId,
+                  initialValue: _fromAccountId,
                   decoration: const InputDecoration(
                     labelText: 'From account',
                     prefixIcon: Icon(Icons.account_balance_outlined),
@@ -105,7 +104,7 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
-                  value: _toAccountId,
+                  initialValue: _toAccountId,
                   decoration: const InputDecoration(
                     labelText: 'To account',
                     prefixIcon: Icon(Icons.account_balance_outlined),

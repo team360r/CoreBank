@@ -1,4 +1,5 @@
 /// CoreBank data models.
+library;
 
 enum AccountType { checking, savings }
 

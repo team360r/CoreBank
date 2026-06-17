@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flightbank/app.dart';
+import 'package:corebank/app.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('login flow navigates to accounts', (tester) async {
-    await tester.pumpWidget(const ProviderScope(child: FlightBankApp()));
+    await tester.pumpWidget(const ProviderScope(child: CoreBankApp()));
     await tester.pumpAndSettle();
-    expect(find.text('FlightBank'), findsOneWidget);
+    expect(find.text('CoreBank'), findsOneWidget);
     expect(find.text('Sign In'), findsOneWidget);
 
     await tester.enterText(find.widgetWithText(TextFormField, 'Email'), 'test@example.com');
