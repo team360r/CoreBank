@@ -3,6 +3,7 @@
 .packages
 build/
 *.g.dart
+.flutter-plugins-dependencies
 
 # Docusaurus
 docs-site/node_modules/
